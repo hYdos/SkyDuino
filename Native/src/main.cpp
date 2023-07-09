@@ -23,6 +23,8 @@ void isNewTagPresent();
 
 void selectTag();
 
+void readUid();
+
 void setup() {
     // Setup commands
     functionMap.clear();
@@ -33,9 +35,10 @@ void setup() {
     functionMap[0x50] = writeBlock;
     functionMap[0x60] = isNewTagPresent;
     functionMap[0x70] = selectTag;
+    functionMap[0x80] = readUid;
 
     // Setup for communication
-    Serial.begin(921600);
+    Serial.begin(2000000);
     Serial.setTimeout(200);
     while (!Serial);
     resetReader();
@@ -79,14 +82,25 @@ void authenticate() {
             cmd,
             block[0],
             reinterpret_cast<MFRC522::MIFARE_Key *>(keyBytes),
-            &(mfrc522.uid)
+            &mfrc522.uid
     );
 
     Serial.write((byte) status);
 }
 
-void readBlock() {
+void readUid() {
+    Serial.write(mfrc522.uid.uidByte, mfrc522.uid.size);
+}
 
+void readBlock() {
+    uint8_t block[1];
+    Serial.readBytes(block, 1);
+
+    uint8_t buffer[18];
+    uint8_t size = 18;
+    auto status = mfrc522.MIFARE_Read(block[0], buffer, &size);
+    Serial.write((byte) status);
+    Serial.write(buffer, 18);
 }
 
 void writeBlock() {

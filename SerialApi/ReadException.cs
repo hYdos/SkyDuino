@@ -1,13 +1,11 @@
-﻿namespace SerialApi;
+namespace SerialApi; 
 
-public class AuthenticationException : Exception {
+public class ReadException : Exception {
 
     public readonly int Result;
-    public readonly KeyType? KeyType;
 
-    public AuthenticationException(int result, KeyType keyType) : base($"PCD_Authenticate() on {keyType} failed. Reason: {GetReason(result)}") {
+    public ReadException(int result) : base($"MIFARE_Read() failed. Reason: {GetReason(result)}") {
         Result = result;
-        KeyType = keyType;
     }
 
     private static string GetReason(int result) {

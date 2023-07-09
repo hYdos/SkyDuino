@@ -10,7 +10,7 @@ public class SkyDuino {
         Console.WriteLine("Connecting to Arduino");
         _serialPort = new SerialPort();
         _serialPort.PortName = "COM4";
-        _serialPort.BaudRate = 921600;
+        _serialPort.BaudRate = 2000000;
         _serialPort.ReadTimeout = 200;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
@@ -43,8 +43,12 @@ public class SkyDuino {
         return $"{major}.{minor}.{patch}";
     }
 
+    public byte[] GetUid() {
+        return SendDataExpectResult(new byte[] { 0x80 }, 4, 200); // can be > 4 bytes so wait a bit longer just in case
+    }
+
     public void ResetRc522() {
-        SendData(new byte[] { 0x20 }, 50);
+        SendData(new byte[] { 0x20 });
     }
 
     public bool IsNewTagPresent() {
@@ -65,11 +69,24 @@ public class SkyDuino {
         if (result != 0) throw new AuthenticationException(result, keyType);
     }
 
+    public byte[] ReadBlock(byte block) {
+        var data = new byte[] { 0x40 }.Concat(new[] { block }).ToArray();
+        using var stream = new MemoryStream(SendDataExpectResult(data, 17));
+        var result = stream.ReadByte();
+
+        if (result != 0) throw new ReadException(result);
+        var blockData = new byte[18];
+        stream.Read(blockData, 0, blockData.Length);
+        return blockData;
+    }
+
+    // ReSharper disable once MemberCanBePrivate.Global
     public void SendData(byte[] data, int timeout = 500) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
     }
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 20) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
@@ -78,5 +95,4 @@ public class SkyDuino {
         _serialPort.Read(readData, 0, readData.Length);
         return readData;
     }
-
 }
