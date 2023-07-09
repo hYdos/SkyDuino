@@ -20,7 +20,7 @@ public class AuthenticationException : Exception {
             5 => "INTERNAL_ERROR",
             6 => "INVALID",
             7 => "CRC_WRONG",
-            8 => "MIFARE_NAK", // Not authenticated
+            0xFF => "MIFARE_NAK", // Not authenticated
             _ => throw new ArgumentOutOfRangeException(nameof(result), result, null)
         };
     }

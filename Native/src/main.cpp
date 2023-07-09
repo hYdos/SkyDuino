@@ -35,7 +35,7 @@ void setup() {
     functionMap[0x70] = selectTag;
 
     // Setup for communication
-    Serial.begin(115200);
+    Serial.begin(921600);
     Serial.setTimeout(200);
     while (!Serial);
     resetReader();

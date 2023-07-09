@@ -2,15 +2,16 @@
 
 namespace SerialApi;
 
-public class NfcController {
+public class SkyDuino {
 
     private readonly SerialPort _serialPort;
 
-    public NfcController() {
+    public SkyDuino() {
+        Console.WriteLine("Connecting to Arduino");
         _serialPort = new SerialPort();
         _serialPort.PortName = "COM4";
-        _serialPort.BaudRate = 115200;
-        _serialPort.ReadTimeout = 3000;
+        _serialPort.BaudRate = 921600;
+        _serialPort.ReadTimeout = 200;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
 
@@ -18,18 +19,20 @@ public class NfcController {
         _serialPort.DtrEnable = true;
         Thread.Sleep(100);
         _serialPort.DtrEnable = false;
-        Thread.Sleep(3000); // 1 second more than the arduino to let it be ready after the reset
+        Console.WriteLine("Waiting for Arduino...");
+        Thread.Sleep(2500); // Arduino Uno has some serious reset time
 
         // Read possibly junk data because we know it might be bad
         try {
             while (true) {
-                Console.WriteLine(_serialPort.ReadLine().Replace("\r", ""));
+                _serialPort.ReadLine();
             }
         }
         catch (TimeoutException) {
         }
 
-        Console.WriteLine("Ready");
+        _serialPort.ReadTimeout = 2000;
+        Console.WriteLine("Arduino Ready");
     }
 
     public string GetNativeVersion() {
@@ -40,30 +43,34 @@ public class NfcController {
         return $"{major}.{minor}.{patch}";
     }
 
+    public void ResetRc522() {
+        SendData(new byte[] { 0x20 }, 50);
+    }
+
     public bool IsNewTagPresent() {
-        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x60 }, 1, 100));
+        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x60 }, 1));
         return stream.ReadByte() == 1;
     }
 
     public bool SelectTag() {
-        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x70 }, 1, 100));
+        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x70 }, 1));
         return stream.ReadByte() == 1;
     }
 
     public void AuthenticateSector(byte[] key, byte block, KeyType keyType) {
-        var data = new byte[] { 0x30 }.Concat(key.Concat(new[] { block, (byte) (keyType == KeyType.KeyA ? 0x00 : 0x01) })).ToArray();
+        var data = new byte[] { 0x30 }.Concat(key.Concat(new[] { block, (byte)(keyType == KeyType.KeyA ? 0x00 : 0x01) })).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
         var result = stream.ReadByte();
 
         if (result != 0) throw new AuthenticationException(result, keyType);
     }
-    
+
     public void SendData(byte[] data, int timeout = 500) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
     }
 
-    public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 500) {
+    public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 20) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
         while (_serialPort.BytesToRead < expectedMinDataLength) Thread.Sleep(timeout);
@@ -71,4 +78,5 @@ public class NfcController {
         _serialPort.Read(readData, 0, readData.Length);
         return readData;
     }
+
 }
