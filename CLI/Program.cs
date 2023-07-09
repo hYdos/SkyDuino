@@ -1,14 +1,20 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using SerialApi;
 
-using SerialApi;
+namespace CLI;
 
-var controller = new NfcController();
-Console.WriteLine("Nfc Controller Ready");
-const string correctResult = "0.1.0";
+internal static class Program {
 
-controller.SendDataExpectResult(new byte[] { 0 }, stream => {
-    var major = stream.ReadByte();
-    var minor = stream.ReadByte();
-    var patch = stream.ReadByte();
-    Console.WriteLine($"Version {major}.{minor}.{patch}");
-});
+    public static void Main(string[] args) {
+        var controller = new NfcController();
+        Console.WriteLine("Native Version " + controller.GetNativeVersion());
+        Console.WriteLine("Waiting for tag");
+
+        while (true) {
+            if (!controller.IsNewTagPresent()) continue;
+            if (!controller.SelectTag()) continue;
+            
+            Console.WriteLine("Found new tag");
+            controller.AuthenticateSector(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 3, KeyType.KeyB);
+        }
+    }
+}
