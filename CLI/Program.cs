@@ -1,4 +1,5 @@
 ﻿using CLI.nfc;
+using CLI.skylanders;
 using SerialApi;
 using SerialApi.error;
 
@@ -16,12 +17,12 @@ internal static class Program {
             if (!arduino.IsNewTagPresent()) continue;
             if (!arduino.SelectTag()) continue;
             var tag = NfcTag.Get(arduino.GetUid(), arduino);
-            tag.FillKeys();
-
+            
             Console.WriteLine("Found new tag");
             Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
-
-            WriteTag(File.ReadAllBytes("C:/Users/hydos/Downloads/0D_3C_D5_DF_hydos_scarlet_ninjini"), tag);
+            
+            WriteTag(File.ReadAllBytes("D:/Projects/hYdos/SkylanderWriter/CLI/bin/Debug/net7.0/AD-42-D5-DF.dump"), tag, true);
+            // DumpTag(tag);
             return;
         }
     }
@@ -29,31 +30,52 @@ internal static class Program {
     private static void DumpTag(NfcTag tag) {
         var dump = new List<byte>();
         for (byte i = 0; i < 64; i++) {
+            var sector = (byte)Math.Floor((decimal)i / 4);
+            var isKeyBlock = i % 4 == 3;
             Console.WriteLine($"Reading block {i}");
             var block = tag.ReadBlock(i)[..16];
-            dump.AddRange(block);
+            dump.AddRange(isKeyBlock ? tag.KeyA[sector].Concat(block[6..10]).Concat(tag.KeyB[sector]).ToArray() : block);
         }
 
         File.WriteAllBytes($"{BitConverter.ToString(tag.Uid)}.dump", dump.ToArray());
     }
 
     private static void WriteTag(byte[] dump, NfcTag tag, bool generateKeyA = false) {
-        for (byte i = 1; i < 64; i++) {
+        for (byte i = 1; i < 64; i++) { // ignore uid and other info block
             Console.WriteLine($"Writing block {i}");
             var sector = (byte)Math.Floor((decimal)i / 4);
             var blockOffsetInDump = i * 16;
             var blockEnd = blockOffsetInDump + 16;
             var dumpBlock = dump[blockOffsetInDump..blockEnd];
             var isKeyBlock = i % 4 == 3;
-            if (isKeyBlock && generateKeyA) dumpBlock = tag.KeyA[sector].Concat(dumpBlock[6..]).ToArray();
+            if (isKeyBlock && generateKeyA) dumpBlock = SkyKeyGen.CalcKeyA(tag.Uid, sector).Concat(dumpBlock[6..10]).Concat(NfcTag.SkylanderKeyB).ToArray();
 
             try {
-                tag.WriteBlock(i, dump[blockOffsetInDump..blockEnd]);
+                tag.WriteBlock(i, dumpBlock);
             }
             catch (AuthenticationException) {
-                tag.RemoveTimeout();
-                Console.WriteLine("Using Fallback KeyA");
-                tag.WriteBlock(i, dump[blockOffsetInDump..blockEnd], KeyType.KeyA);
+                try {
+                    tag.RemoveTimeout();
+                    Console.WriteLine("Using Fallback KeyA");
+                    tag.WriteBlock(i, dumpBlock, KeyType.KeyA);
+                }
+                catch (WriteException e) {
+                    if (e.Result != 255) throw;
+                    Console.WriteLine("Cannot write to read only block :(");
+                    continue;
+                }
+            }
+            catch (WriteException) {
+                try {
+                    tag.RemoveTimeout();
+                    Console.WriteLine("Using Fallback KeyA");
+                    tag.WriteBlock(i, dumpBlock);
+                }
+                catch (WriteException e) {
+                    if (e.Result != 255) throw;
+                    Console.WriteLine("Cannot write to read only block :(");
+                    continue;
+                }
             }
 
             if (isKeyBlock) {

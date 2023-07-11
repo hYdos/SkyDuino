@@ -2,31 +2,47 @@
 using Newtonsoft.Json;
 using SerialApi;
 using SerialApi.error;
+// _arduino field is set late when cached
+#pragma warning disable CS8602
 
 namespace CLI.nfc;
 
 public class NfcTag {
-    private static readonly byte[] SkylanderKeyB = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    private static readonly byte[] FactoryKeyAll = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    public readonly byte[][] KeyA = new byte[16][];
-    public readonly byte[][] KeyB = new byte[16][];
+    public static readonly byte[] SkylanderKeyB = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    public static readonly byte[] FactoryKeyAll = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
     public readonly byte[] Uid;
-    private readonly SkyDuino _arduino;
+    public byte[][] KeyA = new byte[16][];
+    public byte[][] KeyB = new byte[16][];
+    private SkyDuino? _arduino;
 
     public static NfcTag Get(byte[] uid, SkyDuino arduino) {
-        var possibleCachedFile = $"tags/{BitConverter.ToString(uid)}.json";
-        return File.Exists(possibleCachedFile) ? ReadFromJsonFile(possibleCachedFile)! : new NfcTag(uid, arduino);
+        return File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino);
     }
     
+    [JsonConstructor]
+    internal NfcTag(byte[] uid, byte[][] keyA, byte[][] keyB) {
+        Uid = uid;
+        KeyA = keyA;
+        KeyB = keyB;
+        _arduino = null;
+    }
+
     private NfcTag(byte[] uid, SkyDuino arduino) {
         Uid = uid;
         _arduino = arduino;
+        FillKeys();
     }
 
-    public byte[] ReadBlock(byte block, KeyType keyType = KeyType.KeyA) {
+    public byte[] ReadBlock(byte block) {
         var sector = (byte)Math.Floor((decimal)block / 4);
-        var key = keyType == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
-        _arduino.AuthenticateSector(key, block, keyType);
+        try {
+            _arduino.AuthenticateSector(KeyA[sector], block, KeyType.KeyA);
+        }
+        catch (AuthenticationException) {
+            RemoveTimeout();
+            _arduino.AuthenticateSector(KeyB[sector], block, KeyType.KeyB);
+        }
+
         return _arduino.ReadBlock(block);
     }
 
@@ -35,6 +51,10 @@ public class NfcTag {
         var key = keyType == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
         _arduino.AuthenticateSector(key, block, keyType);
         _arduino.WriteBlock(block, data);
+        if (block % 4 != 3) return;
+        KeyA[sector] = data[..6];
+        KeyB[sector] = data[10..16];
+        WriteToJsonFile();
     }
 
     public void FillKeys(bool cache = true) {
@@ -45,7 +65,7 @@ public class NfcTag {
             KeyB[i] = GetWorkingKey(i, KeyType.KeyB);
         }
         
-        WriteToJsonFile($"tags/{BitConverter.ToString(Uid)}.json");
+        WriteToJsonFile();
     }
 
     /**
@@ -82,16 +102,20 @@ public class NfcTag {
         }
     }
 
-    private void WriteToJsonFile(string filePath) {
+    private void WriteToJsonFile() {
+        var filePath = $"tags/{BitConverter.ToString(Uid)}.json";
         Directory.CreateDirectory(filePath[..filePath.LastIndexOf('/')]);
         using var writer = new StreamWriter(filePath, false);
         var json = JsonConvert.SerializeObject(this);
         writer.Write(json);
     }
 
-    private static NfcTag? ReadFromJsonFile(string filePath) {
+    private static NfcTag ReadFromJsonFile(byte[] uid, SkyDuino arduino) {
+        var filePath = $"tags/{BitConverter.ToString(uid)}.json";
         using var reader = new StreamReader(filePath);
         var fileString = reader.ReadToEnd();
-        return JsonConvert.DeserializeObject<NfcTag>(fileString);
+        var obj =  JsonConvert.DeserializeObject<NfcTag>(fileString);
+        obj!._arduino = arduino;
+        return obj;
     }
 }

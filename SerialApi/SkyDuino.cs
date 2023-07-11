@@ -83,7 +83,7 @@ public class SkyDuino {
 
     public void WriteBlock(byte block, byte[] blockData) {
         if (blockData.Length != 16) throw new Exception("Bad block data. Needs to be a length of 16");
-        var data = new byte[] { 0x40 }.Concat(new[] { block }).Concat(blockData).ToArray();
+        var data = new byte[] { 0x50 }.Concat(new[] { block }).Concat(blockData).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
         var result = stream.ReadByte();
 
