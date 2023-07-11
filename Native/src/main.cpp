@@ -104,7 +104,13 @@ void readBlock() {
 }
 
 void writeBlock() {
+    uint8_t block[1];
+    Serial.readBytes(block, 1);
+    uint8_t data[16];
+    Serial.readBytes(data, 16);
 
+    auto status = mfrc522.MIFARE_Write(block[0], data, 16);
+    Serial.write((byte) status);
 }
 
 void isNewTagPresent() {

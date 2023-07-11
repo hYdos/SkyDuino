@@ -7,7 +7,7 @@ public class SkyKeyGen {
     private static readonly ulong[] MagicNums = { 2, 3, 73, 1103, 2017, 560381651, 12868356821 };
 
     public static byte[] CalcKeyA(byte[] uid, int sector) {
-        if (sector == 0) return BitConverter.GetBytes(MagicNums[2] * MagicNums[4] * MagicNums[5]);
+        if (sector == 0) return BitConverter.GetBytes(MagicNums[2] * MagicNums[4] * MagicNums[5])[..6].Reverse().ToArray();
         if (uid.Length != 4) throw new ArgumentException("Invalid UID Length");
         if (sector is < 0 or > 15) throw new ArgumentException("Invalid sector (0-15)");
 
@@ -29,6 +29,7 @@ public class SkyKeyGen {
         return BitConverter.GetBytes(crc)
             .Reverse()
             .Skip(2)
+            .Reverse()
             .ToArray();
     }
 }

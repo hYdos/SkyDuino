@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using SerialApi.error;
 
 namespace SerialApi;
 
@@ -80,6 +81,15 @@ public class SkyDuino {
         return blockData;
     }
 
+    public void WriteBlock(byte block, byte[] blockData) {
+        if (blockData.Length != 16) throw new Exception("Bad block data. Needs to be a length of 16");
+        var data = new byte[] { 0x40 }.Concat(new[] { block }).Concat(blockData).ToArray();
+        using var stream = new MemoryStream(SendDataExpectResult(data, 1));
+        var result = stream.ReadByte();
+
+        if (result != 0) throw new WriteException(result);
+    }
+
     // ReSharper disable once MemberCanBePrivate.Global
     public void SendData(byte[] data, int timeout = 500) {
         _serialPort.Write(data, 0, data.Length);
@@ -87,12 +97,14 @@ public class SkyDuino {
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 20) {
+
+    public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 100) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
         while (_serialPort.BytesToRead < expectedMinDataLength) Thread.Sleep(timeout);
         var readData = new byte[_serialPort.BytesToRead];
         _serialPort.Read(readData, 0, readData.Length);
+        if (_serialPort.BytesToRead != 0) throw new Exception("Left bytes unused :(");
         return readData;
     }
 }

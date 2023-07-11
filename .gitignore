@@ -3,4 +3,4 @@
 /packages/
 *.iml
 /_ReSharper.Caches/
-*/.idea/
+*/.idea/*
