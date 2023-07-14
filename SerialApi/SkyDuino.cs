@@ -37,7 +37,7 @@ public class SkyDuino {
     }
 
     public string GetNativeVersion() {
-        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x10 }, 3));
+        using var stream = new MemoryStream(SendDataExpectResult(new[] { (byte)Functions.NativeVersion }, 3));
         var major = stream.ReadByte();
         var minor = stream.ReadByte();
         var patch = stream.ReadByte();
@@ -45,25 +45,25 @@ public class SkyDuino {
     }
 
     public byte[] GetUid() {
-        return SendDataExpectResult(new byte[] { 0x80 }, 4, 200); // can be > 4 bytes so wait a bit longer just in case
+        return SendDataExpectResult(new[] { (byte)Functions.ReadUid }, 4, 200); // can be > 4 bytes so wait a bit longer just in case
     }
 
     public void ResetRc522() {
-        SendData(new byte[] { 0x20 });
+        SendData(new[] { (byte)Functions.ResetReader });
     }
 
     public bool IsNewTagPresent() {
-        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x60 }, 1));
+        using var stream = new MemoryStream(SendDataExpectResult(new[] { (byte)Functions.IsNewTagPresent }, 1));
         return stream.ReadByte() == 1;
     }
 
     public bool SelectTag() {
-        using var stream = new MemoryStream(SendDataExpectResult(new byte[] { 0x70 }, 1));
+        using var stream = new MemoryStream(SendDataExpectResult(new[] { (byte)Functions.SelectTag }, 1));
         return stream.ReadByte() == 1;
     }
 
     public void AuthenticateSector(byte[] key, byte block, KeyType keyType) {
-        var data = new byte[] { 0x30 }.Concat(key.Concat(new[] { block, (byte)(keyType == KeyType.KeyA ? 0x00 : 0x01) })).ToArray();
+        var data = new[] { (byte)Functions.Authenticate }.Concat(key.Concat(new[] { block, (byte)(keyType == KeyType.KeyA ? 0x00 : 0x01) })).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
         var result = stream.ReadByte();
 
@@ -71,7 +71,7 @@ public class SkyDuino {
     }
 
     public byte[] ReadBlock(byte block) {
-        var data = new byte[] { 0x40 }.Concat(new[] { block }).ToArray();
+        var data = new[] { (byte)Functions.ReadBlock }.Concat(new[] { block }).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 17));
         var result = stream.ReadByte();
 
@@ -80,24 +80,32 @@ public class SkyDuino {
         stream.Read(blockData, 0, blockData.Length);
         return blockData;
     }
+    
+    public byte[] ReadSector(byte sector) {
+        var data = new[] { (byte)Functions.ReadSector }.Concat(new[] { sector }).ToArray();
+        using var stream = new MemoryStream(SendDataExpectResult(data, 18 * 4 + 1));
+        var result = stream.ReadByte();
+
+        if (result != 0) throw new ReadException(result);
+        var sectorData = new byte[18 * 4];
+        stream.Read(sectorData, 0, sectorData.Length);
+        return sectorData;
+    }
 
     public void WriteBlock(byte block, byte[] blockData) {
         if (blockData.Length != 16) throw new Exception("Bad block data. Needs to be a length of 16");
-        var data = new byte[] { 0x50 }.Concat(new[] { block }).Concat(blockData).ToArray();
+        var data = new[] { (byte)Functions.WriteBlock }.Concat(new[] { block }).Concat(blockData).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
         var result = stream.ReadByte();
 
         if (result != 0) throw new WriteException(result);
     }
 
-    // ReSharper disable once MemberCanBePrivate.Global
     public void SendData(byte[] data, int timeout = 500) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
     }
-
-    // ReSharper disable once MemberCanBePrivate.Global
-
+    
     public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 100) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);

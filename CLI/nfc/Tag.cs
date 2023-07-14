@@ -33,8 +33,10 @@ public class NfcTag {
         FillKeys();
     }
 
-    public byte[] ReadBlock(byte block) {
+    public byte[] ReadBlock(byte block, bool handleAuthentication = true) {
+        if (!handleAuthentication) return _arduino.ReadBlock(block);
         var sector = (byte)Math.Floor((decimal)block / 4);
+
         try {
             _arduino.AuthenticateSector(KeyA[sector], block, KeyType.KeyA);
         }
@@ -45,8 +47,21 @@ public class NfcTag {
 
         return _arduino.ReadBlock(block);
     }
+    
+    public byte[] ReadSector(byte sector) {
+        try {
+            _arduino.AuthenticateSector(KeyA[sector], (byte)(sector * 4), KeyType.KeyA);
+        }
+        catch (AuthenticationException) {
+            RemoveTimeout();
+            _arduino.AuthenticateSector(KeyB[sector], (byte)(sector * 4), KeyType.KeyB);
+        }
+
+        return _arduino.ReadSector(sector);
+    }
 
     public void WriteBlock(byte block, byte[] data, KeyType keyType = KeyType.KeyB) {
+        if (block == 0) VerifySafeBlock0Overwrite(data);
         var sector = (byte)Math.Floor((decimal)block / 4);
         var key = keyType == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
         _arduino.AuthenticateSector(key, block, keyType);
@@ -55,6 +70,13 @@ public class NfcTag {
         KeyA[sector] = data[..6];
         KeyB[sector] = data[10..16];
         WriteToJsonFile();
+    }
+
+    private static void VerifySafeBlock0Overwrite(byte[] data) {
+        var newUid = data[..4];
+        var bcc = data[5];
+        var calculatedBcc = newUid[0] ^ newUid[1] ^ newUid[2] ^ newUid[3];
+        if (bcc != calculatedBcc) throw new BadBssException();
     }
 
     public void FillKeys(bool cache = true) {
@@ -117,5 +139,10 @@ public class NfcTag {
         var obj =  JsonConvert.DeserializeObject<NfcTag>(fileString);
         obj!._arduino = arduino;
         return obj;
+    }
+
+    public void Authenticate(byte sector, KeyType type) {
+        var key = type == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
+        _arduino.AuthenticateSector(key, (byte)(sector * 4), type);
     }
 }

@@ -1,3 +1,5 @@
+#define MFRC522_SPICLOCK (10000000u)	// the MFRC522 can accept upto 10MHz. (Override original 4MHz)
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <MFRC522.h>
@@ -5,6 +7,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"
+
 MFRC522 mfrc522(10, 9);
 std::map<byte, void (*)()> functionMap;
 
@@ -25,6 +28,8 @@ void selectTag();
 
 void readUid();
 
+void readSector();
+
 void setup() {
     // Setup commands
     functionMap.clear();
@@ -36,6 +41,7 @@ void setup() {
     functionMap[0x60] = isNewTagPresent;
     functionMap[0x70] = selectTag;
     functionMap[0x80] = readUid;
+    functionMap[0x90] = readSector;
 
     // Setup for communication
     Serial.begin(2000000);
@@ -101,6 +107,26 @@ void readBlock() {
     auto status = mfrc522.MIFARE_Read(block[0], buffer, &size);
     Serial.write((byte) status);
     Serial.write(buffer, 18);
+}
+
+void readSector() {
+    uint8_t sector[1];
+    Serial.readBytes(sector, 1);
+
+    uint8_t buffer[18 * 4];
+    uint8_t size = 18;
+    for (byte i = 0; i < 4; ++i) {
+        auto status = mfrc522.MIFARE_Read((sector[0] * 4) + i, buffer + (18 * i), &size);
+
+        if(status != MFRC522::STATUS_OK) {
+            Serial.write(i);
+            Serial.write(status);
+            return;
+        }
+    }
+
+    Serial.write((byte) MFRC522::STATUS_OK); // Status is ok for all sectors
+    Serial.write(buffer, 18 * 4);
 }
 
 void writeBlock() {

@@ -4,3 +4,6 @@
 *.iml
 /_ReSharper.Caches/
 */.idea/*
+*.htm
+.vs/*
+Backup/
