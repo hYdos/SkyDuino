@@ -16,12 +16,9 @@ public class SkyDuino {
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
 
-        // Toggle the DTR signal to simulate a reset
-        _serialPort.DtrEnable = true;
         Thread.Sleep(100);
-        _serialPort.DtrEnable = false;
         Console.WriteLine("Waiting for Arduino...");
-        Thread.Sleep(4000); // Arduino Uno has some serious reset time
+        Thread.Sleep(2500); // Arduino Uno has some serious reset time
 
         // Read possibly junk data because we know it might be bad
         try {

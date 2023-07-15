@@ -23,7 +23,7 @@ internal static class Program {
         //     getDefaultValue: () => null);
         //
         // var disableSafety = new Option<bool>(
-        //     name: "--i-live-on-the-edge",
+        //     name: "--no-protection",
         //     description: "Turns off all pre-emptive safety. DO NOT TURN THIS ON",
         //     getDefaultValue: () => false);
         //

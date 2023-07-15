@@ -9,17 +9,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CLI/BadBssException.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SerialApi/Functions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/CLI.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/CLI.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/nfc/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/nfc/Tag.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Native/platformio.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Native/platformio.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SkylanderWriter.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SkylanderWriter.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,10 +22,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/344ef5be523147fb81564c55d4d330ed2c888/c9/809640a9/Console.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1f371daa9d6feabe01612a3aa37cb2c6c80a984cb4efc21d718f7f8c9e0ca/Exception.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/29ea32a76b2a6b8eb246f247df6a6a86d887384b4c31db2a35effccdd86c24/JsonSerializerInternalReader.cs" root0="SKIP_HIGHLIGHTING" />
@@ -43,6 +31,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e6641ef64e23bc021c22f7a836547714731db956d18c439bc734695b9e72/SafeFileHandle.Windows.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ec9cbb41e7c431e6de747cc3eb514627fd64fb0a57fae8952b4a2d5573/System.IO.Ports.notsupported.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f3981d658666ec9cc1e6958fe22f8614bfe02ccb6625b056c3ece3729c9262/JsonConvert.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SerialApi/error/ReadException.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -132,7 +122,8 @@
       <workItem from="1688889090846" duration="11194000" />
       <workItem from="1689052271737" duration="16419000" />
       <workItem from="1689144308149" duration="9653000" />
-      <workItem from="1689336675163" duration="822000" />
+      <workItem from="1689336675163" duration="4769000" />
+      <workItem from="1689389317814" duration="1357000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
@@ -142,7 +133,15 @@
       <option name="project" value="LOCAL" />
       <updated>1689059418746</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Be more lenient on start time tolerance (was 2.5s now 4s">
+      <option name="closed" value="true" />
+      <created>1689338965428</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1689338965428</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -163,6 +162,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Speed increase" />
-    <option name="LAST_COMMIT_MESSAGE" value="Speed increase" />
+    <MESSAGE value="Be more lenient on start time tolerance (was 2.5s now 4s" />
+    <option name="LAST_COMMIT_MESSAGE" value="Be more lenient on start time tolerance (was 2.5s now 4s" />
   </component>
 </project>
