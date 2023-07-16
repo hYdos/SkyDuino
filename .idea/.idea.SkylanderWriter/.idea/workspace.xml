@@ -8,19 +8,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="Update serial library. Remove newtonsoft json">
-      <change afterPath="$PROJECT_DIR$/Native/src/AuthHandler.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Native/src/AuthHandler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/BadBssException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/BadBccException.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/nfc/NfcTag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/nfc/NfcTag.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/nfc/NfcTagSerializer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/nfc/NfcTagSerializer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SerialApi/error/WriteException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/error/WriteException.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SkylanderWriter.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/SkylanderWriter.sln.DotSettings.user" afterDir="false" />
-    </list>
+    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="allow the writing of block 0 (hopefully)" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +31,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f3981d658666ec9cc1e6958fe22f8614bfe02ccb6625b056c3ece3729c9262/JsonConvert.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/Native/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
@@ -138,7 +127,7 @@
       <workItem from="1689144308149" duration="9653000" />
       <workItem from="1689336675163" duration="4769000" />
       <workItem from="1689389317814" duration="1357000" />
-      <workItem from="1689467179051" duration="12456000" />
+      <workItem from="1689467179051" duration="13344000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
@@ -164,7 +153,23 @@
       <option name="project" value="LOCAL" />
       <updated>1689473336814</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Finish CLI">
+      <option name="closed" value="true" />
+      <created>1689483736258</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1689483736258</updated>
+    </task>
+    <task id="LOCAL-00005" summary="allow the writing of block 0 (hopefully)">
+      <option name="closed" value="true" />
+      <created>1689483754273</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1689483754273</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -187,6 +192,8 @@
     <MESSAGE value="Speed increase" />
     <MESSAGE value="Be more lenient on start time tolerance (was 2.5s now 4s" />
     <MESSAGE value="Update serial library. Remove newtonsoft json" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update serial library. Remove newtonsoft json" />
+    <MESSAGE value="Finish CLI" />
+    <MESSAGE value="allow the writing of block 0 (hopefully)" />
+    <option name="LAST_COMMIT_MESSAGE" value="allow the writing of block 0 (hopefully)" />
   </component>
 </project>
