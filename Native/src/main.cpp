@@ -1,4 +1,4 @@
-#define MFRC522_SPICLOCK (10000000u)	// the MFRC522 can accept upto 10MHz. (Override original 4MHz)
+#define MFRC522_SPICLOCK (10000000u)    // the MFRC522 can accept upto 10MHz. (Override original 4MHz)
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -43,7 +43,7 @@ void setup() {
     functionMap[0x07] = selectTag;
     functionMap[0x08] = readUid;
     functionMap[0x09] = readSector;
-    functionMap[0x0A] = setKeys;
+    //functionMap[0x0A] = setKeys;
 
     // Setup for communication
     Serial.begin(115200);
@@ -120,7 +120,7 @@ void readSector() {
     for (byte i = 0; i < 4; ++i) {
         auto status = mfrc522.MIFARE_Read((sector[0] * 4) + i, buffer + (18 * i), &size);
 
-        if(status != MFRC522::STATUS_OK) {
+        if (status != MFRC522::STATUS_OK) {
             Serial.write(i);
             Serial.write(status);
             return;
@@ -137,8 +137,26 @@ void writeBlock() {
     uint8_t data[16];
     Serial.readBytes(data, 16);
 
+    if (block[0] == 0) {
+        // Stop encrypted traffic so we can send raw bytes
+        mfrc522.PCD_StopCrypto1();
+
+        // Activate UID backdoor
+        if (!mfrc522.MIFARE_OpenUidBackdoor(false)) {
+            Serial.write((byte) 0xBB);
+            return;
+        }
+    }
+
     auto status = mfrc522.MIFARE_Write(block[0], data, (byte) 16);
     Serial.write((byte) status);
+
+    if (block[0] == 0) {
+        // Wake the card up again
+        byte atqa_answer[2];
+        byte atqa_size = 2;
+        mfrc522.PICC_WakeupA(atqa_answer, &atqa_size);
+    }
 }
 
 void isNewTagPresent() {
