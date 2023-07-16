@@ -75,18 +75,30 @@ internal static class Program {
             generateSkylanderKeysOption,
             ignoreFailuresOption
         };
+        
+        // Reset Command Options
+        // TODO: when the arduino side gets a full authentication system turn off auth for magic tags
+        var uidOverride = new Option<string?>(
+            name: "--uid",
+            description: "Use a different uid for guessing keys instead of the one on the tag. Helpful for broken writes",
+            getDefaultValue: () => null);
+        
+        var reset = new Command("reset", "Does its best to reset the tag to factory defaults. Best results with \"Magic\" tags") {
+            uidOverride
+        };
 
 
         dumpCommand.SetHandler(DumpTag, outputArgument);
         write.SetHandler(WriteTag, inputArgument, unlockBlock0Option, disableSafetyOption, generateSkylanderKeysOption, ignoreFailuresOption);
         rootCommand.AddCommand(dumpCommand);
         rootCommand.AddCommand(write);
+        rootCommand.AddCommand(reset);
         return rootCommand.InvokeAsync(args).Result;
     }
 
     private static void DumpTag(string? output) {
         Setup();
-        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino);
+        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, false);
         Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
         output ??= $"{BitConverter.ToString(tag.Uid)}.dump";
         var stopwatch = new Stopwatch();
@@ -112,7 +124,7 @@ internal static class Program {
     // TODO: do this sector by sector
     private static void WriteTag(string inputDump, bool writeBlock0, bool disableSafety, bool genSkyKeys, bool ignoreFails) {
         Setup();
-        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino);
+        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, writeBlock0);
         var startOffset = (byte)(writeBlock0 ? 0 : 1);
         var dump = File.ReadAllBytes(inputDump);
         var stopwatch = new Stopwatch();
@@ -161,61 +173,4 @@ internal static class Program {
         stopwatch.Stop();
         Console.WriteLine($"Write took {stopwatch.ElapsedMilliseconds}ms");
     }
-
-    // private static void WriteTag(byte[] dump, NfcTag tag, bool generateKeyA = false) {
-    //     for (byte i = 1; i < 64; i++) {
-    //         // ignore uid and other info block
-    //         Console.WriteLine($"Writing block {i}");
-    //         var sector = (byte)Math.Floor((decimal)i / 4);
-    //         var blockOffsetInDump = i * 16;
-    //         var blockEnd = blockOffsetInDump + 16;
-    //         var dumpBlock = dump[blockOffsetInDump..blockEnd];
-    //         var isKeyBlock = i % 4 == 3;
-    //         if (isKeyBlock && generateKeyA) dumpBlock = SkyKeyGen.CalcKeyA(tag.Uid, sector).Concat(dumpBlock[6..10]).Concat(NfcTag.SkylanderKeyB).ToArray();
-    //
-    //         try {
-    //             tag.WriteBlock(i, dumpBlock);
-    //         }
-    //         catch (AuthenticationException) {
-    //             try {
-    //                 tag.RemoveTimeout();
-    //                 Console.WriteLine("Using Fallback KeyA");
-    //                 tag.WriteBlock(i, dumpBlock, KeyType.KeyA);
-    //             }
-    //             catch (WriteException e) {
-    //                 if (e.Result != 255) throw;
-    //                 Console.WriteLine($"Cannot write to read only block :( (Got error {e.Result}");
-    //                 continue;
-    //             }
-    //         }
-    //         catch (WriteException) {
-    //             try {
-    //                 tag.RemoveTimeout();
-    //                 Console.WriteLine("Using Fallback KeyA");
-    //                 tag.WriteBlock(i, dumpBlock);
-    //             }
-    //             catch (WriteException e) {
-    //                 if (e.Result != 255) throw;
-    //                 Console.WriteLine("Cannot write to read only block :(");
-    //                 continue;
-    //             }
-    //         }
-    //
-    //         if (isKeyBlock) {
-    //             Console.WriteLine("Skipping Key Block Verification");
-    //             continue;
-    //         }
-    //
-    //         Console.WriteLine($"Verifying block {i}");
-    //         var block = tag.ReadBlock(i)[..16];
-    //         if (!dumpBlock.SequenceEqual(block)) {
-    //             Console.WriteLine("Write Fail :(");
-    //             Console.WriteLine("Expected: [{0}]", BitConverter.ToString(dumpBlock).Replace("-", " "));
-    //             Console.WriteLine("Received: [{0}]", BitConverter.ToString(block).Replace("-", " "));
-    //         }
-    //         else Console.WriteLine("Write Success!");
-    //     }
-    //
-    //     File.WriteAllBytes($"{BitConverter.ToString(tag.Uid)}.dump", dump.ToArray());
-    // }
 }

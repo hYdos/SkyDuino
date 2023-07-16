@@ -16,8 +16,8 @@ public class NfcTag {
     public byte[][] KeyB { get; } = new byte[16][];
     private SkyDuino? _arduino;
 
-    public static NfcTag Get(byte[] uid, SkyDuino arduino) {
-        return File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino);
+    public static NfcTag Get(byte[] uid, SkyDuino arduino, bool isMagic) {
+        return File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino, isMagic);
     }
 
     [JsonConstructor]
@@ -28,10 +28,10 @@ public class NfcTag {
         _arduino = null;
     }
 
-    private NfcTag(byte[] uid, SkyDuino arduino) {
+    private NfcTag(byte[] uid, SkyDuino arduino, bool isMagic) {
         Uid = uid;
         _arduino = arduino;
-        FillKeys();
+        if(!isMagic) FillKeys();
     }
 
     public byte[] ReadBlock(byte block, bool handleAuthentication = true) {
