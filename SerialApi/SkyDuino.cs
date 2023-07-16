@@ -5,9 +5,11 @@ namespace SerialApi;
 
 public class SkyDuino {
 
+
     private readonly SerialPort _serialPort;
 
     public SkyDuino() {
+        Console.WriteLine($"{string.Join(", ", SerialPort.GetPortNames())}");
         Console.WriteLine("Connecting to Arduino");
         _serialPort = new SerialPort();
         _serialPort.PortName = SerialPort.GetPortNames()[0];
@@ -77,7 +79,7 @@ public class SkyDuino {
         stream.Read(blockData, 0, blockData.Length);
         return blockData;
     }
-    
+
     public byte[] ReadSector(byte sector) {
         var data = new[] { (byte)Functions.ReadSector }.Concat(new[] { sector }).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 18 * 4 + 1));
@@ -102,7 +104,7 @@ public class SkyDuino {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
     }
-    
+
     public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 100) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);

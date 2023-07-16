@@ -1,7 +1,6 @@
 ﻿using System.CommandLine;
 using System.Diagnostics;
 using CLI.nfc;
-using CLI.skylanders;
 using SerialApi;
 using SerialApi.error;
 

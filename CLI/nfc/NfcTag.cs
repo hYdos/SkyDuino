@@ -1,7 +1,8 @@
-﻿using CLI.skylanders;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using SerialApi;
 using SerialApi.error;
+
 // _arduino field is set late when cached
 #pragma warning disable CS8602
 
@@ -18,7 +19,7 @@ public class NfcTag {
     public static NfcTag Get(byte[] uid, SkyDuino arduino) {
         return File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino);
     }
-    
+
     [JsonConstructor]
     internal NfcTag(byte[] uid, byte[][] keyA, byte[][] keyB) {
         Uid = uid;
@@ -47,7 +48,7 @@ public class NfcTag {
 
         return _arduino.ReadBlock(block);
     }
-    
+
     public byte[] ReadSector(byte sector) {
         try {
             _arduino.AuthenticateSector(KeyA[sector], (byte)(sector * 4), KeyType.KeyA);
@@ -86,7 +87,7 @@ public class NfcTag {
             Console.WriteLine($"Finding key B for sector {i}");
             KeyB[i] = GetWorkingKey(i, KeyType.KeyB);
         }
-        
+
         WriteToJsonFile();
     }
 
@@ -127,16 +128,17 @@ public class NfcTag {
     private void WriteToJsonFile() {
         var filePath = $"tags/{BitConverter.ToString(Uid)}.json";
         Directory.CreateDirectory(filePath[..filePath.LastIndexOf('/')]);
-        using var writer = new StreamWriter(filePath, false);
-        var json = JsonConvert.SerializeObject(this);
-        writer.Write(json);
+        using var writer = File.Create(filePath);
+        if (File.Exists(filePath)) File.Delete(filePath);
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        JsonSerializer.SerializeAsync(writer, this, options);
     }
 
     private static NfcTag ReadFromJsonFile(byte[] uid, SkyDuino arduino) {
         var filePath = $"tags/{BitConverter.ToString(uid)}.json";
         using var reader = new StreamReader(filePath);
         var fileString = reader.ReadToEnd();
-        var obj =  JsonConvert.DeserializeObject<NfcTag>(fileString);
+        var obj = JsonSerializer.Deserialize<NfcTag>(fileString);
         obj!._arduino = arduino;
         return obj;
     }

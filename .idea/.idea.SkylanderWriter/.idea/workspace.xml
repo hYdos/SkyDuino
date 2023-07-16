@@ -9,8 +9,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/CLI/nfc/NfcTagSerializer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/CLI.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/CLI.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/nfc/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/nfc/NfcTag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/skylanders/SkyKeyGen.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/SkyKeyGen.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,6 +36,9 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ec9cbb41e7c431e6de747cc3eb514627fd64fb0a57fae8952b4a2d5573/System.IO.Ports.notsupported.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f3981d658666ec9cc1e6958fe22f8614bfe02ccb6625b056c3ece3729c9262/JsonConvert.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SerialApi/error/ReadException.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -124,6 +131,7 @@
       <workItem from="1689144308149" duration="9653000" />
       <workItem from="1689336675163" duration="4769000" />
       <workItem from="1689389317814" duration="1357000" />
+      <workItem from="1689467179051" duration="4016000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
