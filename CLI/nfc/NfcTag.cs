@@ -11,9 +11,9 @@ namespace CLI.nfc;
 public class NfcTag {
     public static readonly byte[] SkylanderKeyB = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     public static readonly byte[] FactoryKeyAll = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    public readonly byte[] Uid;
-    public byte[][] KeyA = new byte[16][];
-    public byte[][] KeyB = new byte[16][];
+    public byte[] Uid { get; }
+    public byte[][] KeyA { get; } = new byte[16][];
+    public byte[][] KeyB { get; } = new byte[16][];
     private SkyDuino? _arduino;
 
     public static NfcTag Get(byte[] uid, SkyDuino arduino) {
@@ -21,10 +21,10 @@ public class NfcTag {
     }
 
     [JsonConstructor]
-    internal NfcTag(byte[] uid, byte[][] keyA, byte[][] keyB) {
-        Uid = uid;
-        KeyA = keyA;
-        KeyB = keyB;
+    public NfcTag(byte[] Uid, byte[][] KeyA, byte[][] KeyB) {
+        this.Uid = Uid;
+        this.KeyA = KeyA;
+        this.KeyB = KeyB;
         _arduino = null;
     }
 
@@ -61,8 +61,8 @@ public class NfcTag {
         return _arduino.ReadSector(sector);
     }
 
-    public void WriteBlock(byte block, byte[] data, KeyType keyType = KeyType.KeyB) {
-        if (block == 0) VerifySafeBlock0Overwrite(data);
+    public void WriteBlock(byte block, byte[] data, bool ignoreSafety, KeyType keyType = KeyType.KeyB) {
+        if (block == 0 && !ignoreSafety) VerifySafeBlock0Overwrite(data);
         var sector = (byte)Math.Floor((decimal)block / 4);
         var key = keyType == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
         _arduino.AuthenticateSector(key, block, keyType);
@@ -75,9 +75,9 @@ public class NfcTag {
 
     private static void VerifySafeBlock0Overwrite(byte[] data) {
         var newUid = data[..4];
-        var bcc = data[5];
+        var bcc = data[4];
         var calculatedBcc = newUid[0] ^ newUid[1] ^ newUid[2] ^ newUid[3];
-        if (bcc != calculatedBcc) throw new BadBssException();
+        if (bcc != calculatedBcc) throw new BadBccException();
     }
 
     public void FillKeys(bool cache = true) {
@@ -128,8 +128,8 @@ public class NfcTag {
     private void WriteToJsonFile() {
         var filePath = $"tags/{BitConverter.ToString(Uid)}.json";
         Directory.CreateDirectory(filePath[..filePath.LastIndexOf('/')]);
-        using var writer = File.Create(filePath);
         if (File.Exists(filePath)) File.Delete(filePath);
+        using var writer = File.Create(filePath);
         var options = new JsonSerializerOptions { WriteIndented = true };
         JsonSerializer.SerializeAsync(writer, this, options);
     }

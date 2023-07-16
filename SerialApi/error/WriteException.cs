@@ -3,9 +3,11 @@ namespace SerialApi.error;
 public class WriteException : Exception {
 
     public readonly int Result;
+    public readonly string Reason;
 
     public WriteException(int result) : base($"MIFARE_Write() failed. Reason: {GetReason(result)}") {
         Result = result;
+        Reason = GetReason(result);
     }
 
     private static string GetReason(int result) {
