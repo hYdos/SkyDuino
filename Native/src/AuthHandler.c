@@ -3,7 +3,7 @@
 /**
  * Currently set keys. Factory keys by default
  */
-struct TagKeys tagKeys = {
+TagKeys tagKeys = {
         false,
         {
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
@@ -45,7 +45,7 @@ void setTagKeys() {
 
 }
 
-void setKeys(struct TagKeys keys) {
+void setKeys(TagKeys keys) {
     tagKeys = keys;
 }
 

@@ -9,6 +9,12 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"
 
+#define BAUD_RATE 115200
+#define READ_TIMEOUT 20
+#define VERSION_MAJOR 0x00
+#define VERSION_MINOR 0x02
+#define VERSION_PATCH 0x01
+
 MFRC522 mfrc522(10, 9);
 std::map<byte, void (*)()> functionMap;
 
@@ -16,8 +22,6 @@ std::map<byte, void (*)()> functionMap;
 void nativeVersion();
 
 void resetReader();
-
-void authenticate();
 
 void readBlock();
 
@@ -36,7 +40,6 @@ void setup() {
     functionMap.clear();
     functionMap[0x01] = nativeVersion;
     functionMap[0x02] = resetReader;
-    functionMap[0x03] = authenticate;
     functionMap[0x04] = readBlock;
     functionMap[0x05] = writeBlock;
     functionMap[0x06] = isNewTagPresent;
@@ -46,11 +49,10 @@ void setup() {
     functionMap[0x0A] = setTagKeys;
 
     // Setup for communication
-    Serial.begin(115200);
-    Serial.setTimeout(200);
+    Serial.begin(BAUD_RATE);
+    Serial.setTimeout(READ_TIMEOUT);
     while (!Serial);
     resetReader();
-    delay(2000);
     Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     Serial.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
     Serial.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
@@ -68,7 +70,7 @@ void loop() {
 }
 
 void nativeVersion() {
-    uint8_t responseData[] = {0x00, 0x01, 0x00};
+    uint8_t responseData[] = {VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
     Serial.write(responseData, sizeof(responseData));
 }
 
@@ -77,24 +79,25 @@ void resetReader() {
     mfrc522.PCD_Init();
 }
 
-void authenticate() {
-    uint8_t keyBytes[6];
-    Serial.readBytes(keyBytes, 6);
-    uint8_t block[1];
-    Serial.readBytes(block, 1);
-    uint8_t keyType[1];
-    Serial.readBytes(keyType, 1);
-    auto cmd = keyType[0] == 0 ? MFRC522::PICC_CMD_MF_AUTH_KEY_A : MFRC522::PICC_CMD_MF_AUTH_KEY_B;
-
-    auto status = mfrc522.PCD_Authenticate(
-            cmd,
-            block[0],
-            reinterpret_cast<MFRC522::MIFARE_Key *>(keyBytes),
-            &mfrc522.uid
-    );
-
-    Serial.write((byte) status);
-}
+// FIXME: deprecated. make it a utility method in AuthHandler
+//void authenticate() {
+//    uint8_t keyBytes[6];
+//    Serial.readBytes(keyBytes, 6);
+//    uint8_t block[1];
+//    Serial.readBytes(block, 1);
+//    uint8_t keyType[1];
+//    Serial.readBytes(keyType, 1);
+//    auto cmd = keyType[0] == 0 ? MFRC522::PICC_CMD_MF_AUTH_KEY_A : MFRC522::PICC_CMD_MF_AUTH_KEY_B;
+//
+//    auto status = mfrc522.PCD_Authenticate(
+//            cmd,
+//            block[0],
+//            reinterpret_cast<MFRC522::MIFARE_Key *>(keyBytes),
+//            &mfrc522.uid
+//    );
+//
+//    Serial.write((byte) status);
+//}
 
 void readUid() {
     Serial.write(mfrc522.uid.uidByte, mfrc522.uid.size);

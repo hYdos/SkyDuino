@@ -1,13 +1,14 @@
 #ifndef NATIVE_AUTHHANDLER_H
 #define NATIVE_AUTHHANDLER_H
+
 #include <stdint.h>
 #include <Arduino.h>
 
-struct TagKeys {
+typedef struct {
     bool isMagicTag;
     uint8_t KeyA[16][6];
     uint8_t KeyB[16][6];
-};
+} TagKeys;
 
 /**
  * Sets the keys to be used when reading or writing tags
@@ -24,7 +25,7 @@ void disableAuthentication();
  */
 void enableAuthentication();
 
-void setKeys(struct TagKeys keys);
+void setKeys(TagKeys keys);
 
 uint8_t (*getKeyA(byte sector))[6];
 
