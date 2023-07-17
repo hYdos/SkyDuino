@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <map>
-#include "AuthHandler.h"
+#include <AuthHandler.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"
@@ -43,7 +43,7 @@ void setup() {
     functionMap[0x07] = selectTag;
     functionMap[0x08] = readUid;
     functionMap[0x09] = readSector;
-    //functionMap[0x0A] = setKeys;
+    functionMap[0x0A] = setTagKeys;
 
     // Setup for communication
     Serial.begin(115200);

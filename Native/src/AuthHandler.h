@@ -4,9 +4,25 @@
 #include <Arduino.h>
 
 struct TagKeys {
+    bool isMagicTag;
     uint8_t KeyA[16][6];
     uint8_t KeyB[16][6];
 };
+
+/**
+ * Sets the keys to be used when reading or writing tags
+ */
+void setTagKeys();
+
+/**
+ * Turns off authentication. Speeds up writing on magic cards, and allows to write anywhere on the tag unrestricted
+ */
+void disableAuthentication();
+
+/**
+ * Re-enables authentication. Should be done after writing is done
+ */
+void enableAuthentication();
 
 void setKeys(struct TagKeys keys);
 
