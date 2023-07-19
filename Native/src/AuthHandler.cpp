@@ -20,9 +20,11 @@ TagKeys tagKeys = {
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
+                {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
         },
         {
+                {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
@@ -41,8 +43,38 @@ TagKeys tagKeys = {
         }
 };
 
-void setTagKeys() {
+bool shouldAuthenticate() {
+    return !tagKeys.isMagicTag;
+}
 
+void setTagKeys() {
+    uint8_t isMagic[1];
+    Serial.readBytes(isMagic, 1);
+    uint8_t keyA[6 * 16];
+    Serial.readBytes(keyA, 6 * 16);
+    uint8_t keyB[6 * 16];
+    Serial.readBytes(keyB, 6 * 16);
+
+    tagKeys.isMagicTag = isMagic[0] == 1;
+    // TODO: the rest of this. bare minimum needed for writing magic tags properly 
+}
+
+// it's not a virus, I swear
+bool openBackdoor(MFRC522 mfrc522) {
+    // Stop encrypted traffic so we can send raw bytes
+    mfrc522.PCD_StopCrypto1();
+
+    // Activate UID backdoor
+    if (!mfrc522.MIFARE_OpenUidBackdoor(false))return false;
+
+    return true;
+}
+
+void closeBackdoor(MFRC522 mfrc522) {
+    // Wake the card up again
+    byte atqa_answer[2];
+    byte atqa_size = 2;
+    mfrc522.PICC_WakeupA(atqa_answer, &atqa_size);
 }
 
 void setKeys(TagKeys keys) {

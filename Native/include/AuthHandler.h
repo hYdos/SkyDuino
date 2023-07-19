@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <Arduino.h>
+#include <MFRC522.h>
 
 typedef struct {
     bool isMagicTag;
@@ -10,20 +11,21 @@ typedef struct {
     uint8_t KeyB[16][6];
 } TagKeys;
 
+bool shouldAuthenticate();
+
 /**
  * Sets the keys to be used when reading or writing tags
  */
 void setTagKeys();
 
 /**
- * Turns off authentication. Speeds up writing on magic cards, and allows to write anywhere on the tag unrestricted
- */
-void disableAuthentication();
+ * Takes keys and tries them all until one works
+*/
+void getWorkingKey();
 
-/**
- * Re-enables authentication. Should be done after writing is done
- */
-void enableAuthentication();
+bool openBackdoor(MFRC522 mfrc522);
+
+void closeBackdoor(MFRC522 mfrc522);
 
 void setKeys(TagKeys keys);
 

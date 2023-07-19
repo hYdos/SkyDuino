@@ -14,7 +14,7 @@ public class SkyDuino {
         _serialPort = new SerialPort();
         _serialPort.PortName = SerialPort.GetPortNames()[0];
         _serialPort.BaudRate = 115200;
-        _serialPort.ReadTimeout = 200;
+        _serialPort.ReadTimeout = 2000;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
 
@@ -71,10 +71,13 @@ public class SkyDuino {
 
         if (result != 0) throw new AuthenticationException(result, keyType);
     }
-
+    
+    /**
+     * @deprecated :(
+     */
     public byte[] ReadBlock(byte block) {
         var data = new[] { (byte)Functions.ReadBlock }.Concat(new[] { block }).ToArray();
-        using var stream = new MemoryStream(SendDataExpectResult(data, 17));
+        using var stream = new MemoryStream(SendDataExpectResult(data, 18 + 1));
         var result = stream.ReadByte();
 
         if (result != 0) throw new ReadException(result);
@@ -85,13 +88,10 @@ public class SkyDuino {
 
     public byte[] ReadSector(byte sector) {
         var data = new[] { (byte)Functions.ReadSector }.Concat(new[] { sector }).ToArray();
-        using var stream = new MemoryStream(SendDataExpectResult(data, 18 * 4 + 1));
-        var result = stream.ReadByte();
-
+        using var statusInfo = new MemoryStream(SendDataExpectResult(data, 1));
+        var result = statusInfo.ReadByte();
         if (result != 0) throw new ReadException(result);
-        var sectorData = new byte[18 * 4];
-        stream.Read(sectorData, 0, sectorData.Length);
-        return sectorData;
+        return WaitForData(18 * 4);
     }
 
     public void WriteBlock(byte block, byte[] blockData) {
@@ -103,18 +103,29 @@ public class SkyDuino {
         if (result != 0) throw new WriteException(result);
     }
 
+    public void SetKeys(bool isMagic, byte[][] keyA, byte[][] keyB) {
+        var data = new byte[1 + 16 * 6 * 2];
+        data[0] = (byte) (isMagic ? 1 : 0);
+        // TODO: the rest lol
+        SendData(new[] { (byte)Functions.SetTagKeys }.Concat(data).ToArray());
+    }
+
     public void SendData(byte[] data, int timeout = 500) {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
     }
 
+    public byte[] WaitForData(int dataLength, int timeout = 100) {
+        while (_serialPort.BytesToRead < dataLength) Thread.Sleep(timeout);
+        var readData = new byte[dataLength];
+        _serialPort.Read(readData, 0, readData.Length);
+        return readData;
+    }
+
     public byte[] SendDataExpectResult(byte[] data, int expectedMinDataLength, int timeout = 100) {
+        if (_serialPort.BytesToRead != 0) throw new Exception("Left bytes unused :(");
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
-        while (_serialPort.BytesToRead < expectedMinDataLength) Thread.Sleep(timeout);
-        var readData = new byte[_serialPort.BytesToRead];
-        _serialPort.Read(readData, 0, readData.Length);
-        if (_serialPort.BytesToRead != 0) throw new Exception("Left bytes unused :(");
-        return readData;
+        return WaitForData(expectedMinDataLength, timeout);
     }
 }

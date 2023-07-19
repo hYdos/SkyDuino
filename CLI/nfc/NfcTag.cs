@@ -17,7 +17,9 @@ public class NfcTag {
     private SkyDuino? _arduino;
 
     public static NfcTag Get(byte[] uid, SkyDuino arduino, bool isMagic) {
-        return File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino, isMagic);
+        var tag = File.Exists($"tags/{BitConverter.ToString(uid)}.json") ? ReadFromJsonFile(uid, arduino) : new NfcTag(uid, arduino, isMagic);
+        if (tag.KeyA[0].Length != 6) tag.FillKeys();
+        return tag;
     }
 
     [JsonConstructor]
@@ -31,7 +33,7 @@ public class NfcTag {
     private NfcTag(byte[] uid, SkyDuino arduino, bool isMagic) {
         Uid = uid;
         _arduino = arduino;
-        if(!isMagic) FillKeys();
+        FillKeys();
     }
 
     public byte[] ReadBlock(byte block, bool handleAuthentication = true) {
@@ -49,13 +51,15 @@ public class NfcTag {
         return _arduino.ReadBlock(block);
     }
 
-    public byte[] ReadSector(byte sector) {
-        try {
-            _arduino.AuthenticateSector(KeyA[sector], (byte)(sector * 4), KeyType.KeyA);
-        }
-        catch (AuthenticationException) {
-            RemoveTimeout();
-            _arduino.AuthenticateSector(KeyB[sector], (byte)(sector * 4), KeyType.KeyB);
+    public byte[] ReadSector(byte sector, bool auth = true) {
+        if (auth) {
+            try {
+                _arduino.AuthenticateSector(KeyA[sector], (byte)(sector * 4), KeyType.KeyA);
+            }
+            catch (AuthenticationException) {
+                RemoveTimeout();
+                _arduino.AuthenticateSector(KeyB[sector], (byte)(sector * 4), KeyType.KeyB);
+            }
         }
 
         return _arduino.ReadSector(sector);
@@ -65,7 +69,7 @@ public class NfcTag {
         if (block == 0 && !ignoreSafety) VerifySafeBlock0Overwrite(data);
         var sector = (byte)Math.Floor((decimal)block / 4);
         var key = keyType == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
-        _arduino.AuthenticateSector(key, block, keyType);
+        _arduino.AuthenticateSector(key, block == 0 ? (byte)1 : block, block == 0 ? KeyType.KeyA : keyType);
         _arduino.WriteBlock(block, data);
         if (block % 4 != 3) return;
         KeyA[sector] = data[..6];
@@ -146,5 +150,9 @@ public class NfcTag {
     public void Authenticate(byte sector, KeyType type) {
         var key = type == KeyType.KeyA ? KeyA[sector] : KeyB[sector];
         _arduino.AuthenticateSector(key, (byte)(sector * 4), type);
+    }
+
+    public void SetActive(bool magic) {
+        _arduino.SetKeys(magic, new byte[1][], new byte[1][]);
     }
 }

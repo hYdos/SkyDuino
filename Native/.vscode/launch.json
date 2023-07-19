@@ -12,20 +12,20 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "D:/Projects/hYdos/SkylanderWriter/Native/.pio/build/uno/firmware.elf",
+            "executable": "D:/Projects/hYdos/SkyDuino/Native/.pio/build/uno/firmware.elf",
             "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/hydos/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug"
+                "task": "Pre-Debug (uno)"
             }
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "D:/Projects/hYdos/SkylanderWriter/Native/.pio/build/uno/firmware.elf",
+            "executable": "D:/Projects/hYdos/SkyDuino/Native/.pio/build/uno/firmware.elf",
             "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/hydos/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
@@ -34,7 +34,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "D:/Projects/hYdos/SkylanderWriter/Native/.pio/build/uno/firmware.elf",
+            "executable": "D:/Projects/hYdos/SkyDuino/Native/.pio/build/uno/firmware.elf",
             "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/hydos/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",

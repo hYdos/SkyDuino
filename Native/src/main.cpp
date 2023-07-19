@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <map>
-#include <AuthHandler.h>
+#include "AuthHandler.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"
@@ -35,11 +35,15 @@ void readUid();
 
 void readSector();
 
+// FIXME: deprecated
+void authenticate();
+
 void setup() {
     // Setup commands
     functionMap.clear();
     functionMap[0x01] = nativeVersion;
     functionMap[0x02] = resetReader;
+    functionMap[0x03] = authenticate; // TODO: replace with command to try all keys and send back status and if any worked the working one.
     functionMap[0x04] = readBlock;
     functionMap[0x05] = writeBlock;
     functionMap[0x06] = isNewTagPresent;
@@ -75,34 +79,40 @@ void nativeVersion() {
 }
 
 void resetReader() {
+    closeBackdoor(mfrc522);
+    mfrc522.PICC_HaltA();
     SPIClass::begin();
     mfrc522.PCD_Init();
 }
 
 // FIXME: deprecated. make it a utility method in AuthHandler
-//void authenticate() {
-//    uint8_t keyBytes[6];
-//    Serial.readBytes(keyBytes, 6);
-//    uint8_t block[1];
-//    Serial.readBytes(block, 1);
-//    uint8_t keyType[1];
-//    Serial.readBytes(keyType, 1);
-//    auto cmd = keyType[0] == 0 ? MFRC522::PICC_CMD_MF_AUTH_KEY_A : MFRC522::PICC_CMD_MF_AUTH_KEY_B;
-//
-//    auto status = mfrc522.PCD_Authenticate(
-//            cmd,
-//            block[0],
-//            reinterpret_cast<MFRC522::MIFARE_Key *>(keyBytes),
-//            &mfrc522.uid
-//    );
-//
-//    Serial.write((byte) status);
-//}
+void authenticate() {
+    uint8_t keyBytes[6];
+    Serial.readBytes(keyBytes, 6);
+    uint8_t block[1];
+    Serial.readBytes(block, 1);
+    uint8_t keyType[1];
+    Serial.readBytes(keyType, 1);
+    auto cmd = keyType[0] == 0 ? MFRC522::PICC_CMD_MF_AUTH_KEY_A : MFRC522::PICC_CMD_MF_AUTH_KEY_B;
+
+    auto status = mfrc522.PCD_Authenticate(
+            cmd,
+            block[0],
+            reinterpret_cast<MFRC522::MIFARE_Key *>(keyBytes),
+            &mfrc522.uid
+    );
+
+    Serial.write((byte) status);
+    return;
+
+    Serial.write((byte) 0);
+}
 
 void readUid() {
     Serial.write(mfrc522.uid.uidByte, mfrc522.uid.size);
 }
 
+// TO REMOVE
 void readBlock() {
     uint8_t block[1];
     Serial.readBytes(block, 1);
@@ -124,7 +134,6 @@ void readSector() {
         auto status = mfrc522.MIFARE_Read((sector[0] * 4) + i, buffer + (18 * i), &size);
 
         if (status != MFRC522::STATUS_OK) {
-            Serial.write(i);
             Serial.write(status);
             return;
         }
@@ -140,26 +149,14 @@ void writeBlock() {
     uint8_t data[16];
     Serial.readBytes(data, 16);
 
-    if (block[0] == 0) {
-        // Stop encrypted traffic so we can send raw bytes
-        mfrc522.PCD_StopCrypto1();
-
-        // Activate UID backdoor
-        if (!mfrc522.MIFARE_OpenUidBackdoor(false)) {
-            Serial.write((byte) 0xBB);
-            return;
-        }
+    if (!shouldAuthenticate() && !openBackdoor(mfrc522)) {
+        Serial.write((byte) 0xA0);
+        return;
     }
 
     auto status = mfrc522.MIFARE_Write(block[0], data, (byte) 16);
+    if (!shouldAuthenticate()) closeBackdoor(mfrc522);
     Serial.write((byte) status);
-
-    if (block[0] == 0) {
-        // Wake the card up again
-        byte atqa_answer[2];
-        byte atqa_size = 2;
-        mfrc522.PICC_WakeupA(atqa_answer, &atqa_size);
-    }
 }
 
 void isNewTagPresent() {

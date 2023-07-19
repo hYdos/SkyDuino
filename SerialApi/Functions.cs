@@ -9,5 +9,6 @@ public enum Functions: byte {
     IsNewTagPresent = 0x06,
     SelectTag = 0x07,
     ReadUid = 0x08,
-    ReadSector = 0x09
+    ReadSector = 0x09,
+    SetTagKeys = 0x0A
 }

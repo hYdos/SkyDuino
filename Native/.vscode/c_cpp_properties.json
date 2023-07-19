@@ -8,10 +8,10 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "D:/Projects/hYdos/SkylanderWriter/Native/include",
-                "D:/Projects/hYdos/SkylanderWriter/Native/src",
-                "D:/Projects/hYdos/SkylanderWriter/Native/.pio/libdeps/uno/StandardCplusplus",
-                "D:/Projects/hYdos/SkylanderWriter/Native/.pio/libdeps/uno/MFRC522/src",
+                "D:/Projects/hYdos/SkyDuino/Native/include",
+                "D:/Projects/hYdos/SkyDuino/Native/src",
+                "D:/Projects/hYdos/SkyDuino/Native/.pio/libdeps/uno/StandardCplusplus",
+                "D:/Projects/hYdos/SkyDuino/Native/.pio/libdeps/uno/MFRC522/src",
                 "C:/Users/hydos/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "C:/Users/hydos/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/hydos/.platformio/packages/framework-arduino-avr/variants/standard",
@@ -24,10 +24,10 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "D:/Projects/hYdos/SkylanderWriter/Native/include",
-                    "D:/Projects/hYdos/SkylanderWriter/Native/src",
-                    "D:/Projects/hYdos/SkylanderWriter/Native/.pio/libdeps/uno/StandardCplusplus",
-                    "D:/Projects/hYdos/SkylanderWriter/Native/.pio/libdeps/uno/MFRC522/src",
+                    "D:/Projects/hYdos/SkyDuino/Native/include",
+                    "D:/Projects/hYdos/SkyDuino/Native/src",
+                    "D:/Projects/hYdos/SkyDuino/Native/.pio/libdeps/uno/StandardCplusplus",
+                    "D:/Projects/hYdos/SkyDuino/Native/.pio/libdeps/uno/MFRC522/src",
                     "C:/Users/hydos/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "C:/Users/hydos/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/hydos/.platformio/packages/framework-arduino-avr/variants/standard",

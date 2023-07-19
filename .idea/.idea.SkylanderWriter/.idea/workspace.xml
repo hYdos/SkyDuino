@@ -8,7 +8,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="allow the writing of block 0 (hopefully)" />
+    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="allow the writing of block 0 (hopefully)">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/nfc/NfcTag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/nfc/NfcTag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/Native/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/.vscode/c_cpp_properties.json" beforeDir="false" afterPath="$PROJECT_DIR$/Native/.vscode/c_cpp_properties.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/.vscode/extensions.json" beforeDir="false" afterPath="$PROJECT_DIR$/Native/.vscode/extensions.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/Native/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/src/AuthHandler.c" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/AuthHandler.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/src/AuthHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Native/include/AuthHandler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp.old" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerialApi/Functions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/Functions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerialApi/error/ReadException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/error/ReadException.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,24 +33,33 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/344ef5be523147fb81564c55d4d330ed2c888/c9/809640a9/Console.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1f371daa9d6feabe01612a3aa37cb2c6c80a984cb4efc21d718f7f8c9e0ca/Exception.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/29ea32a76b2a6b8eb246f247df6a6a86d887384b4c31db2a35effccdd86c24/JsonSerializerInternalReader.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3e8f1cfc7f3332b9a0e31b3f10347da0b2775895319a6b9a2b4f25a4c48654bc/Command.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8c16b4fb43da5719d1882d3e2ff69cb363a64fd4975f9d317b1b8af6a7232/SafeHandle.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/91c739e5a554faecc562c6afb39e6c49b6eb42646741a8fc42a63ed22f8f26a4/IdentifierSymbol.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ad962ee45417c5a27da355ec387fce4e67e6651c4714405445e47eef693ad4/Byte.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bceb877fbde5705c8d35845865f1f66ea4374c74ad1c31ba3a1299a2b62/JsonConstructorAttribute.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c3b2a4cdcf127e28515dc4657830cb28309c97b930e7b89a3f664eda6c5172/Thread.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d1b4ef4f84adf03b79eb1ac859431fcec0ac8a5dfee5a46db3f9613f56abadb/SerialPort.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d9d9faea5e6ed6438a777ef8c6eed41261f81d8e86488ed923ad92564f54e/ThrowHelper.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e6641ef64e23bc021c22f7a836547714731db956d18c439bc734695b9e72/SafeFileHandle.Windows.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ec9cbb41e7c431e6de747cc3eb514627fd64fb0a57fae8952b4a2d5573/System.IO.Ports.notsupported.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f3981d658666ec9cc1e6958fe22f8614bfe02ccb6625b056c3ece3729c9262/JsonConvert.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/CLI/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/Native/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Projects/hYdos/SkylanderWriter/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SerialApi/error/ReadException.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -78,9 +102,9 @@
 }</component>
   <component name="RunManager" selected=".NET Project.CLI">
     <configuration name="CLI" type="DotNetProject" factoryName=".NET Project">
-      <option name="EXE_PATH" value="" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="EXE_PATH" value="$PROJECT_DIR$/CLI/bin/Debug/net7.0/CLI.exe" />
+      <option name="PROGRAM_PARAMETERS" value="write &quot;$USER_HOME$/Desktop/6D-42-D5-DF_spyro_s2_hydos&quot; -ub0" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/CLI/bin/Debug/net7.0" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
@@ -90,7 +114,7 @@
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
       <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
       <option name="PROJECT_KIND" value="DotNetCore" />
-      <option name="PROJECT_TFM" value="" />
+      <option name="PROJECT_TFM" value="net7.0" />
       <method v="2">
         <option name="Build" />
       </method>
@@ -113,6 +137,10 @@
         <option name="Build" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue=".NET Project.CLI" />
+      <item itemvalue=".NET Project.GUI" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -132,6 +160,8 @@
       <workItem from="1689389317814" duration="1357000" />
       <workItem from="1689467179051" duration="13867000" />
       <workItem from="1689508504022" duration="543000" />
+      <workItem from="1689631991478" duration="11160000" />
+      <workItem from="1689763124001" duration="6004000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
@@ -199,5 +229,37 @@
     <MESSAGE value="Finish CLI" />
     <MESSAGE value="allow the writing of block 0 (hopefully)" />
     <option name="LAST_COMMIT_MESSAGE" value="allow the writing of block 0 (hopefully)" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/SerialApi/error/ReadException.cs</url>
+          <line>22</line>
+          <properties documentPath="D:\Projects\hYdos\SkyDuino\SerialApi\error\ReadException.cs" initialLine="22" containingFunctionPresentation="Method 'GetReason'">
+            <startOffsets>
+              <option value="705" />
+            </startOffsets>
+            <endOffsets>
+              <option value="772" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/SerialApi/SkyDuino.cs</url>
+          <line>125</line>
+          <properties documentPath="D:\Projects\hYdos\SkyDuino\SerialApi\SkyDuino.cs" initialLine="125" containingFunctionPresentation="Method 'SendDataExpectResult'">
+            <startOffsets>
+              <option value="4654" />
+            </startOffsets>
+            <endOffsets>
+              <option value="4698" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

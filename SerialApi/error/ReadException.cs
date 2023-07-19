@@ -18,6 +18,7 @@ public class ReadException : Exception {
             5 => "INTERNAL_ERROR",
             6 => "INVALID",
             7 => "CRC_WRONG",
+            0xA0 => "Failed to open Magic Backdoor",
             0xFF => "MIFARE_NAK", // Not authenticated
             _ => throw new ArgumentOutOfRangeException(nameof(result), result, null)
         };

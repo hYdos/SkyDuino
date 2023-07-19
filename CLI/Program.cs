@@ -13,7 +13,7 @@ internal static class Program {
         Console.WriteLine("Setting up... Now is a good time to put your Tag on the reader");
         _arduino = new SkyDuino();
         var version = _arduino.GetNativeVersion();
-        if (version != "0.1.0") throw new Exception($"Native Version mismatch. Expected Arduino running 0.1.0 but got {version}");
+        if (version != "0.2.1") throw new Exception($"Native Version mismatch. Expected Arduino running 0.2.1 but got {version}");
         Console.WriteLine("Native Version " + _arduino.GetNativeVersion());
 
         if (!_arduino.IsNewTagPresent()) Console.WriteLine("Tag was not present. put your tag on the reader first before running anything");
@@ -22,6 +22,14 @@ internal static class Program {
 
     public static int Main(string[] args) {
         var rootCommand = new RootCommand("CLI For using the SkyDuino");
+
+        // Shared Argument Options
+        var unlockBlock0Option = new Option<bool>(
+            name: "--unlock-block-0",
+            description: "Enables writing to block0. Useful for full dumps and if you have a \"Magic\" tag",
+            getDefaultValue: () => false);
+
+        unlockBlock0Option.AddAlias("-ub0");
 
         // Dump Argument Options
         var outputArgument = new Option<string?>(
@@ -32,17 +40,11 @@ internal static class Program {
         outputArgument.AddAlias("-o");
 
         var dumpCommand = new Command("dump", "Dump's the current tag to a file") {
-            outputArgument
+            outputArgument,
+            unlockBlock0Option
         };
 
         // Write Argument Options
-        var unlockBlock0Option = new Option<bool>(
-            name: "--unlock-block-0",
-            description: "Enables writing to block0. Useful for full dumps and if you have a \"Magic\" tag",
-            getDefaultValue: () => false);
-
-        unlockBlock0Option.AddAlias("-ub0");
-
         var generateSkylanderKeysOption = new Option<bool>(
             name: "--gen-sky-keys",
             description: "Generates the keys needed to be recognised as a Skylander",
@@ -75,20 +77,20 @@ internal static class Program {
             generateSkylanderKeysOption,
             ignoreFailuresOption
         };
-        
+
         // Reset Command Options
         // TODO: when the arduino side gets a full authentication system turn off auth for magic tags
         var uidOverride = new Option<string?>(
             name: "--uid",
             description: "Use a different uid for guessing keys instead of the one on the tag. Helpful for broken writes",
             getDefaultValue: () => null);
-        
+
         var reset = new Command("reset", "Does its best to reset the tag to factory defaults. Best results with \"Magic\" tags") {
             uidOverride
         };
 
 
-        dumpCommand.SetHandler(DumpTag, outputArgument);
+        dumpCommand.SetHandler(DumpTag, outputArgument, unlockBlock0Option);
         write.SetHandler(WriteTag, inputArgument, unlockBlock0Option, disableSafetyOption, generateSkylanderKeysOption, ignoreFailuresOption);
         rootCommand.AddCommand(dumpCommand);
         rootCommand.AddCommand(write);
@@ -96,9 +98,10 @@ internal static class Program {
         return rootCommand.InvokeAsync(args).Result;
     }
 
-    private static void DumpTag(string? output) {
+    private static void DumpTag(string? output, bool canWriteBlock0) {
         Setup();
-        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, false);
+        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, canWriteBlock0);
+        tag.SetActive(canWriteBlock0);
         Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
         output ??= $"{BitConverter.ToString(tag.Uid)}.dump";
         var stopwatch = new Stopwatch();
@@ -125,6 +128,8 @@ internal static class Program {
     private static void WriteTag(string inputDump, bool writeBlock0, bool disableSafety, bool genSkyKeys, bool ignoreFails) {
         Setup();
         var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, writeBlock0);
+        tag.SetActive(writeBlock0);
+        Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
         var startOffset = (byte)(writeBlock0 ? 0 : 1);
         var dump = File.ReadAllBytes(inputDump);
         var stopwatch = new Stopwatch();
@@ -141,25 +146,30 @@ internal static class Program {
             if (isKeyBlock && genSkyKeys) dumpBlock = SkyKeyGen.CalcKeyA(tag.Uid, sector).Concat(dumpBlock[6..10]).Concat(NfcTag.SkylanderKeyB).ToArray();
 
             // Step 1: Write
-            try {
-                Console.WriteLine("Trying write with KeyB");
-                tag.WriteBlock(i, dumpBlock, disableSafety);
+            if (writeBlock0) {
+                tag.WriteBlock(i, dumpBlock, disableSafety, KeyType.KeyA);
             }
-            catch (Exception) {
+            else {
                 try {
-                    Console.WriteLine("Trying write with KeyA");
-                    tag.WriteBlock(i, dumpBlock, disableSafety, KeyType.KeyA);
+                    Console.WriteLine("Trying write with KeyB");
+                    tag.WriteBlock(i, dumpBlock, disableSafety);
                 }
-                catch (Exception exception) {
-                    if (exception is AuthenticationException) Console.WriteLine("We cant write to a read only block :(");
-                    if (!ignoreFails) throw;
+                catch (Exception) {
+                    try {
+                        Console.WriteLine("Trying write with KeyA");
+                        tag.WriteBlock(i, dumpBlock, disableSafety, KeyType.KeyA);
+                    }
+                    catch (Exception exception) {
+                        if (exception is AuthenticationException) Console.WriteLine("We cant write to a read only block :(");
+                        if (!ignoreFails) throw;
+                    }
                 }
             }
 
             // Step 2: Verify
             Console.WriteLine($"Verifying block {i}");
             var block = tag.ReadBlock(i)[..16];
-            if (!dumpBlock.SequenceEqual(block)) {
+            if (!isKeyBlock && !dumpBlock.SequenceEqual(block)) {
                 Console.WriteLine("Write Fail :(");
                 Console.WriteLine("Expected: [{0}]", BitConverter.ToString(dumpBlock).Replace("-", " "));
                 Console.WriteLine("Received: [{0}]", BitConverter.ToString(block).Replace("-", " "));
@@ -167,7 +177,7 @@ internal static class Program {
                 return;
             }
 
-            Console.WriteLine("Write Success!");
+            Console.WriteLine(isKeyBlock ? "Just hope your Key block is ok" : "Write Success!");
         }
 
         stopwatch.Stop();
