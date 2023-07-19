@@ -9,15 +9,17 @@ namespace CLI;
 internal static class Program {
     private static SkyDuino? _arduino;
 
-    private static void Setup() {
+    private static void Setup(bool selectTag = true) {
         Console.WriteLine("Setting up... Now is a good time to put your Tag on the reader");
         _arduino = new SkyDuino();
         var version = _arduino.GetNativeVersion();
         if (version != "0.2.1") throw new Exception($"Native Version mismatch. Expected Arduino running 0.2.1 but got {version}");
         Console.WriteLine("Native Version " + _arduino.GetNativeVersion());
 
-        if (!_arduino.IsNewTagPresent()) Console.WriteLine("Tag was not present. put your tag on the reader first before running anything");
-        if (!_arduino.SelectTag()) Console.WriteLine("Tag was not present. put your tag on the reader first before running anything");
+        if (selectTag) {
+            if (!_arduino.IsNewTagPresent()) Console.WriteLine("Tag was not present. put your tag on the reader first before running anything");
+            if (!_arduino.SelectTag()) Console.WriteLine("Tag was not present. put your tag on the reader first before running anything");
+        }
     }
 
     public static int Main(string[] args) {
@@ -79,23 +81,26 @@ internal static class Program {
         };
 
         // Reset Command Options
-        // TODO: when the arduino side gets a full authentication system turn off auth for magic tags
-        var uidOverride = new Option<string?>(
-            name: "--uid",
-            description: "Use a different uid for guessing keys instead of the one on the tag. Helpful for broken writes",
-            getDefaultValue: () => null);
-
-        var reset = new Command("reset", "Does its best to reset the tag to factory defaults. Best results with \"Magic\" tags") {
-            uidOverride
-        };
-
+        var reset = new Command("reset", "Does its best to reset the tag to factory defaults. Only works on Magic tags");
 
         dumpCommand.SetHandler(DumpTag, outputArgument, unlockBlock0Option);
         write.SetHandler(WriteTag, inputArgument, unlockBlock0Option, disableSafetyOption, generateSkylanderKeysOption, ignoreFailuresOption);
+        reset.SetHandler(ResetTag);
         rootCommand.AddCommand(dumpCommand);
         rootCommand.AddCommand(write);
         rootCommand.AddCommand(reset);
         return rootCommand.InvokeAsync(args).Result;
+    }
+
+    private static void ResetTag() {
+        Setup(false);
+        
+        Console.WriteLine("This will write to ANY tag nearby the reader until the program is closed. Make sure you know what you are doing");
+        // not in SkyDuino.cs just in case
+        var result = _arduino!.SendDataExpectResult(new[] { (byte) Functions.FactoryResetTag }, 1)[0];
+        if (result != 0 && result != 67) Console.WriteLine(new WriteException(result).Message);
+        else if (result == 67) Console.WriteLine("Failed to open backdoor. card prob not there");
+        Console.WriteLine("Reset Done");
     }
 
     private static void DumpTag(string? output, bool canWriteBlock0) {

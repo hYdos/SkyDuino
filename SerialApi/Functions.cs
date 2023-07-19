@@ -10,5 +10,6 @@ public enum Functions: byte {
     SelectTag = 0x07,
     ReadUid = 0x08,
     ReadSector = 0x09,
-    SetTagKeys = 0x0A
+    SetTagKeys = 0x0A,
+    FactoryResetTag = 0x0B
 }

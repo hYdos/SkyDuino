@@ -38,6 +38,8 @@ void readSector();
 // FIXME: deprecated
 void authenticate();
 
+void factoryResetTag();
+
 void setup() {
     // Setup commands
     functionMap.clear();
@@ -51,12 +53,14 @@ void setup() {
     functionMap[0x08] = readUid;
     functionMap[0x09] = readSector;
     functionMap[0x0A] = setTagKeys;
+    functionMap[0x0B] = factoryResetTag;
 
     // Setup for communication
     Serial.begin(BAUD_RATE);
     Serial.setTimeout(READ_TIMEOUT);
+    SPIClass::begin();
+    mfrc522.PCD_Init();
     while (!Serial);
-    resetReader();
     Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     Serial.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
     Serial.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
@@ -165,4 +169,38 @@ void isNewTagPresent() {
 
 void selectTag() {
     Serial.write((byte) mfrc522.PICC_ReadCardSerial());
+}
+
+void factoryResetTag() {
+    mfrc522.MIFARE_OpenUidBackdoor(false);
+    byte block0_buffer[] = {0x01, 0x02, 0x03, 0x04, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    byte blank_buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    byte key_buffer[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x07, 0x80, 0x69, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+    for (byte i = 0; i < 64; ++i) {
+        if(i == 0) { // Block 0
+            auto status = mfrc522.MIFARE_Write((byte)i, block0_buffer, (byte)16);
+
+            if (status != mfrc522.STATUS_OK) {
+                Serial.write((byte) status);
+                return;
+            }
+        } else if(i % 4 == 3) { // Key Block
+            auto status = mfrc522.MIFARE_Write((byte)i, key_buffer, (byte)16);
+
+            if (status != mfrc522.STATUS_OK) {
+                Serial.write((byte) status);
+                return;
+            }
+        } else { // Everything else
+            auto status = mfrc522.MIFARE_Write((byte)i, blank_buffer, (byte)16);
+
+            if (status != mfrc522.STATUS_OK) {
+                Serial.write((byte) status);
+                return;
+            }
+        }
+    }
+
+    Serial.write((byte) 0);
 }
