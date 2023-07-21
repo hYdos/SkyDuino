@@ -8,12 +8,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="Rewrite authentication. support magic tags. end me please">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SerialApi/Functions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/Functions.cs" afterDir="false" />
-    </list>
+    <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,6 +85,11 @@
     ]
   }
 }</component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="dotnet publish --configuration release" />
+    </option>
+  </component>
   <component name="RunManager" selected=".NET Project.Dump">
     <configuration name="Dump" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/CLI/bin/Debug/net7.0/CLI.exe" />
@@ -171,7 +171,7 @@
       <workItem from="1689508504022" duration="543000" />
       <workItem from="1689631991478" duration="11160000" />
       <workItem from="1689763124001" duration="7444000" />
-      <workItem from="1689801094855" duration="2102000" />
+      <workItem from="1689801094855" duration="2726000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
