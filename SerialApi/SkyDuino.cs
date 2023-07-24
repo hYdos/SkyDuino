@@ -14,7 +14,7 @@ public class SkyDuino {
         _serialPort = new SerialPort();
         _serialPort.PortName = SerialPort.GetPortNames()[0];
         _serialPort.BaudRate = 115200;
-        _serialPort.ReadTimeout = 2000;
+        _serialPort.ReadTimeout = 4000;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
 
