@@ -22,20 +22,24 @@ public class SkyDuino {
         Thread.Sleep(100);
         _serialPort.DtrEnable = false;
         Console.WriteLine("Waiting for Arduino...");
-        Thread.Sleep(4000); // Arduino Uno has some serious reset time
+        Thread.Sleep(500); // Arduino Uno has some serious reset time
 
         // Read possibly junk data because we know it might be bad
         try {
             while (true) {
-                Console.WriteLine(_serialPort.ReadLine());
-                
+                var line = _serialPort.ReadLine();
+                if (!line.Equals("==================================\r")) continue;
+                Console.WriteLine("Verified Serial connection is okay");
+                break;
             }
         }
         catch (TimeoutException) {
+            Console.WriteLine("Hello? Arduino??? (Failed to setup reliable serial with arduino)");
+            throw;
         }
 
         _serialPort.ReadTimeout = 2000;
-        Console.WriteLine("Arduino Ready (hopefully)");
+        Console.WriteLine("Arduino Ready");
     }
 
     public string GetNativeVersion() {
