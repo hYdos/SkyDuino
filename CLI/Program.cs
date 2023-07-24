@@ -52,7 +52,7 @@ internal static class Program {
             description: "Generates the keys needed to be recognised as a Skylander",
             getDefaultValue: () => false);
 
-        unlockBlock0Option.AddAlias("-ub0");
+        generateSkylanderKeysOption.AddAlias("-keygen");
 
         var ignoreFailuresOption = new Option<bool>(
             name: "--ignore-failures",
@@ -94,50 +94,49 @@ internal static class Program {
 
     private static void ResetTag() {
         Setup(false);
-        
+
         Console.WriteLine("This will write to ANY tag nearby the reader until the program is closed. Make sure you know what you are doing");
         // not in SkyDuino.cs just in case
-        var result = _arduino!.SendDataExpectResult(new[] { (byte) Functions.FactoryResetTag }, 1)[0];
+        var result = _arduino!.SendDataExpectResult(new[] { (byte)Functions.FactoryResetTag }, 1)[0];
         if (result != 0 && result != 67) Console.WriteLine(new WriteException(result).Message);
         else if (result == 67) Console.WriteLine("Failed to open backdoor. card prob not there");
+
         Console.WriteLine("Reset Done");
     }
 
-    private static void DumpTag(string? output, bool canWriteBlock0) {
-        Setup();
-        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, canWriteBlock0);
-        tag.SetActive(canWriteBlock0);
-        Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
-        output ??= $"{BitConverter.ToString(tag.Uid)}.dump";
-        var stopwatch = new Stopwatch();
-
-        stopwatch.Start();
-        var dump = new List<byte>();
-        for (byte sector = 0; sector < 16; sector++) {
-            Console.WriteLine($"Reading sector {sector}");
-            var sectorData = tag.ReadSector(sector);
-
-            for (byte block = 0; block < 4; block++) {
-                var blockStart = 18 * block;
-                var blockEnd = blockStart + 16;
-                dump.AddRange(sectorData[blockStart..blockEnd]);
-            }
-        }
-
-        File.WriteAllBytes(output, dump.ToArray());
-        stopwatch.Stop();
-        Console.WriteLine($"Dump took {stopwatch.ElapsedMilliseconds}ms");
-    }
 
     // TODO: do this sector by sector
     private static void WriteTag(string inputDump, bool writeBlock0, bool disableSafety, bool genSkyKeys, bool ignoreFails) {
+        Setup(false);
+        var dump = File.ReadAllBytes(inputDump);
+
+        var stopwatch = new Stopwatch();
+
+        if (writeBlock0) {
+            if (genSkyKeys) {
+                var uid = dump[..4];
+                
+                for (var sector = 0; sector < 16; sector++) {
+                    var dumpBlockOffset = sector * 4 * 16 + 3 * 16;
+                    var accessBytes = dump[(dumpBlockOffset + 6)..(dumpBlockOffset + 10)];
+                    var newBlock = SkyKeyGen.CalcKeyA(uid, sector).Concat(accessBytes).Concat(NfcTag.SkylanderKeyB).ToArray();
+                    for (var byteOffset = 0; byteOffset < 16; byteOffset++) dump[dumpBlockOffset + byteOffset] = newBlock[byteOffset];
+                }
+            }
+
+            Console.WriteLine("Do not move your card it might take a few tries");
+            stopwatch.Start();
+            _arduino!.WriteFullFast(dump);
+            stopwatch.Stop();
+            Console.WriteLine($"Write Done. Took {stopwatch.ElapsedMilliseconds}ms");
+            return;
+        }
+
         Setup();
         var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, writeBlock0);
         tag.SetActive(writeBlock0);
         Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
         var startOffset = (byte)(writeBlock0 ? 0 : 1);
-        var dump = File.ReadAllBytes(inputDump);
-        var stopwatch = new Stopwatch();
 
         stopwatch.Start();
         for (var i = startOffset; i < 64; i++) {
@@ -187,5 +186,47 @@ internal static class Program {
 
         stopwatch.Stop();
         Console.WriteLine($"Write took {stopwatch.ElapsedMilliseconds}ms");
+    }
+
+    private static void DumpTag(string? output, bool canWriteBlock0) {
+        var stopwatch = new Stopwatch();
+
+        if (canWriteBlock0) {
+            Setup(false);
+            if (output == null) {
+                Console.WriteLine("You need to specify the output if using fast dump. we dont know the uid");
+                return;
+            }
+
+            stopwatch.Start();
+            var data = _arduino!.ReadFullFast();
+            File.WriteAllBytes(output, data);
+            stopwatch.Stop();
+            Console.WriteLine($"Dump took {stopwatch.ElapsedMilliseconds}ms");
+            return;
+        }
+
+        Setup();
+        var tag = NfcTag.Get(_arduino!.GetUid(), _arduino, canWriteBlock0);
+        tag.SetActive(canWriteBlock0);
+        Console.WriteLine($"Card Uid: {BitConverter.ToString(tag.Uid)}");
+        output ??= $"{BitConverter.ToString(tag.Uid)}.dump";
+
+        stopwatch.Start();
+        var dump = new List<byte>();
+        for (byte sector = 0; sector < 16; sector++) {
+            Console.WriteLine($"Reading sector {sector}");
+            var sectorData = tag.ReadSector(sector);
+
+            for (byte block = 0; block < 4; block++) {
+                var blockStart = 18 * block;
+                var blockEnd = blockStart + 16;
+                dump.AddRange(sectorData[blockStart..blockEnd]);
+            }
+        }
+
+        File.WriteAllBytes(output, dump.ToArray());
+        stopwatch.Stop();
+        Console.WriteLine($"Dump took {stopwatch.ElapsedMilliseconds}ms");
     }
 }

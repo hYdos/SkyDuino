@@ -102,6 +102,24 @@ public class SkyDuino {
 
         if (result != 0) throw new WriteException(result);
     }
+    
+    public void WriteFullFast(byte[] dump) {
+        if (dump.Length != 1024) throw new Exception("Bad dump size. Needs to be a length of 1024");
+        var data = new[] { (byte)Functions.FastWrite }.Concat(dump).ToArray();
+        using var stream = new MemoryStream(SendDataExpectResult(data, 1));
+        
+        var result = stream.ReadByte();
+        if (result != 0) throw new WriteException(result);
+    }
+    
+    public byte[] ReadFullFast() {
+        var data = new[] { (byte)Functions.FastRead }.ToArray();
+        using var stream = new MemoryStream(SendDataExpectResult(data, 1));
+        
+        var result = stream.ReadByte();
+        if (result != 0) throw new ReadException(result);
+        return WaitForData(1024);
+    }
 
     public void SetKeys(bool isMagic, byte[][] keyA, byte[][] keyB) {
         var data = new byte[1 + 16 * 6 * 2];

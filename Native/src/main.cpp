@@ -40,6 +40,10 @@ void authenticate();
 
 void factoryResetTag();
 
+void fastWriteTag();
+
+void fastReadTag();
+
 void setup() {
     // Setup commands
     functionMap.clear();
@@ -54,6 +58,8 @@ void setup() {
     functionMap[0x09] = readSector;
     functionMap[0x0A] = setTagKeys;
     functionMap[0x0B] = factoryResetTag;
+    functionMap[0x0C] = fastWriteTag;
+    functionMap[0x0D] = fastReadTag;
 
     // Setup for communication
     Serial.begin(BAUD_RATE);
@@ -108,8 +114,6 @@ void authenticate() {
 
     Serial.write((byte) status);
     return;
-
-    Serial.write((byte) 0);
 }
 
 void readUid() {
@@ -173,27 +177,30 @@ void selectTag() {
 
 void factoryResetTag() {
     mfrc522.MIFARE_OpenUidBackdoor(false);
-    byte block0_buffer[] = {0x01, 0x02, 0x03, 0x04, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    byte blank_buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    byte key_buffer[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x07, 0x80, 0x69, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    byte block0_buffer[] = {0x01, 0x02, 0x03, 0x04, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                            0x00};
+    byte blank_buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00};
+    byte key_buffer[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x07, 0x80, 0x69, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                         0xFF};
 
     for (byte i = 0; i < 64; ++i) {
-        if(i == 0) { // Block 0
-            auto status = mfrc522.MIFARE_Write((byte)i, block0_buffer, (byte)16);
+        if (i == 0) { // Block 0
+            auto status = mfrc522.MIFARE_Write((byte) i, block0_buffer, (byte) 16);
 
             if (status != mfrc522.STATUS_OK) {
                 Serial.write((byte) status);
                 return;
             }
-        } else if(i % 4 == 3) { // Key Block
-            auto status = mfrc522.MIFARE_Write((byte)i, key_buffer, (byte)16);
+        } else if (i % 4 == 3) { // Key Block
+            auto status = mfrc522.MIFARE_Write((byte) i, key_buffer, (byte) 16);
 
             if (status != mfrc522.STATUS_OK) {
                 Serial.write((byte) status);
                 return;
             }
         } else { // Everything else
-            auto status = mfrc522.MIFARE_Write((byte)i, blank_buffer, (byte)16);
+            auto status = mfrc522.MIFARE_Write((byte) i, blank_buffer, (byte) 16);
 
             if (status != mfrc522.STATUS_OK) {
                 Serial.write((byte) status);
@@ -203,4 +210,43 @@ void factoryResetTag() {
     }
 
     Serial.write((byte) 0);
+}
+
+void fastWriteTag() {
+    uint8_t data[64][16];
+    for (auto &i: data)Serial.readBytes(i, 16);
+    mfrc522.MIFARE_OpenUidBackdoor(false);
+
+    for (byte i = 0; i < 64; ++i) {
+        auto status = mfrc522.MIFARE_Write((byte) i, data[i], (byte) 16);
+
+        if (status != mfrc522.STATUS_OK) {
+            Serial.write((byte) status);
+            return;
+        }
+    }
+
+    Serial.write((byte) 0);
+}
+
+void fastReadTag() {
+    uint8_t data[64][16];
+    mfrc522.MIFARE_OpenUidBackdoor(false);
+    uint8_t size = 18;
+
+    for (byte i = 0; i < 64; ++i) {
+        uint8_t block[18];
+        auto status = mfrc522.MIFARE_Read((byte) i, block, &size);
+
+        if (status != mfrc522.STATUS_OK) {
+            Serial.write((byte) status);
+            return;
+        }
+
+        // Prob not the best way, but write first 16 bytes into dump
+        for (auto j = 0; j < 16; ++j) data[i][j] = block[j];
+    }
+
+    Serial.write((byte) 0);
+    for (auto &i: data)Serial.write(i, 16);
 }
