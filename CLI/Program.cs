@@ -7,13 +7,14 @@ using SerialApi.error;
 namespace CLI;
 
 internal static class Program {
+    private const string ArduinoVersion = "0.2.2";
     private static SkyDuino? _arduino;
 
     private static void Setup(bool selectTag = true) {
         Console.WriteLine("Setting up... Now is a good time to put your Tag on the reader");
         _arduino = new SkyDuino();
         var version = _arduino.GetNativeVersion();
-        if (version != "0.2.1") throw new Exception($"Native Version mismatch. Expected Arduino running 0.2.1 but got {version}");
+        if (version != ArduinoVersion) throw new Exception($"Native Version mismatch. Expected Arduino running {ArduinoVersion} but got {version}");
         Console.WriteLine("Native Version " + _arduino.GetNativeVersion());
 
         if (selectTag) {

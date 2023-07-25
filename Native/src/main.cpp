@@ -9,11 +9,11 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-attributes"
 
-#define BAUD_RATE 115200
+#define BAUD_RATE 57600
 #define READ_TIMEOUT 20
 #define VERSION_MAJOR 0x00
 #define VERSION_MINOR 0x02
-#define VERSION_PATCH 0x01
+#define VERSION_PATCH 0x02
 
 MFRC522 mfrc522(10, 9);
 std::map<byte, void (*)()> functionMap;
@@ -67,12 +67,6 @@ void setup() {
     SPIClass::begin();
     mfrc522.PCD_Init();
     while (!Serial);
-    Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    Serial.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-    Serial.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-    Serial.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-    Serial.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-    Serial.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     Serial.println("==================================");
 }
 
@@ -113,7 +107,6 @@ void authenticate() {
     );
 
     Serial.write((byte) status);
-    return;
 }
 
 void readUid() {

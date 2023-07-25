@@ -13,7 +13,7 @@ public class SkyDuino {
         Console.WriteLine("Connecting to Arduino");
         _serialPort = new SerialPort();
         _serialPort.PortName = SerialPort.GetPortNames()[0];
-        _serialPort.BaudRate = 115200;
+        _serialPort.BaudRate = 57600;
         _serialPort.ReadTimeout = 4000;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
@@ -22,7 +22,6 @@ public class SkyDuino {
         Thread.Sleep(100);
         _serialPort.DtrEnable = false;
         Console.WriteLine("Waiting for Arduino...");
-        Thread.Sleep(500); // Arduino Uno has some serious reset time
 
         // Read possibly junk data because we know it might be bad
         try {

@@ -10,6 +10,9 @@
   <component name="ChangeListManager">
     <list default="true" id="eec7923b-5464-4670-95cc-3f9898b39a2d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SkylanderWriter/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CLI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Native/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Native/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SerialApi/SkyDuino.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +28,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/344ef5be523147fb81564c55d4d330ed2c888/c9/809640a9/Console.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1f371daa9d6feabe01612a3aa37cb2c6c80a984cb4efc21d718f7f8c9e0ca/Exception.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/29ea32a76b2a6b8eb246f247df6a6a86d887384b4c31db2a35effccdd86c24/JsonSerializerInternalReader.cs" root0="SKIP_HIGHLIGHTING" />
@@ -41,12 +42,18 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e6641ef64e23bc021c22f7a836547714731db956d18c439bc734695b9e72/SafeFileHandle.Windows.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ec9cbb41e7c431e6de747cc3eb514627fd64fb0a57fae8952b4a2d5573/System.IO.Ports.notsupported.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f3981d658666ec9cc1e6958fe22f8614bfe02ccb6625b056c3ece3729c9262/JsonConvert.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkyDuino/SerialApi/Functions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkyDuino/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projects/hYdos/SkyDuino/SerialApi/SkyDuino.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SerialApi/error/ReadException.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
   <component name="ProjectId" id="2SGdfM71Ow2Kd30ElBnxGEucga6" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -75,8 +82,8 @@
   },
   "keyToStringList": {
     "rider.external.source.directories": [
-      "C:\\Users\\hydos\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\DecompilerCache",
-      "C:\\Users\\hydos\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\SourcesCache",
+      "C:\\Users\\hydos\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
+      "C:\\Users\\hydos\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
       "C:\\Users\\hydos\\AppData\\Local\\Symbols\\src"
     ]
   }
@@ -189,6 +196,8 @@
       <workItem from="1689801094855" duration="2726000" />
       <workItem from="1689941517754" duration="2100000" />
       <workItem from="1689979074615" duration="11656000" />
+      <workItem from="1690262892263" duration="75000" />
+      <workItem from="1690263034272" duration="4633000" />
     </task>
     <task id="LOCAL-00001" summary="Speed increase">
       <option name="closed" value="true" />
@@ -246,7 +255,23 @@
       <option name="project" value="LOCAL" />
       <updated>1689941538744</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Improve start speeds">
+      <option name="closed" value="true" />
+      <created>1690201739242</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1690201739242</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Allow head room just in case arduino is slow">
+      <option name="closed" value="true" />
+      <created>1690201767973</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1690201767973</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,7 +298,9 @@
     <MESSAGE value="allow the writing of block 0 (hopefully)" />
     <MESSAGE value="Rewrite authentication. support magic tags. end me please" />
     <MESSAGE value="try pico support (doesnt work)" />
-    <option name="LAST_COMMIT_MESSAGE" value="try pico support (doesnt work)" />
+    <MESSAGE value="Improve start speeds" />
+    <MESSAGE value="Allow head room just in case arduino is slow" />
+    <option name="LAST_COMMIT_MESSAGE" value="Allow head room just in case arduino is slow" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -293,13 +320,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/SerialApi/SkyDuino.cs</url>
-          <line>143</line>
+          <line>146</line>
           <properties documentPath="D:\Projects\hYdos\SkyDuino\SerialApi\SkyDuino.cs" initialLine="125" containingFunctionPresentation="Method 'SendDataExpectResult'">
             <startOffsets>
-              <option value="5402" />
+              <option value="5592" />
             </startOffsets>
             <endOffsets>
-              <option value="5446" />
+              <option value="5636" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="10" />
