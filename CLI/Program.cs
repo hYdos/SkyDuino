@@ -90,7 +90,8 @@ internal static class Program {
         rootCommand.AddCommand(dumpCommand);
         rootCommand.AddCommand(write);
         rootCommand.AddCommand(reset);
-        return rootCommand.InvokeAsync(args).Result;
+        
+        return rootCommand.Invoke(args);
     }
 
     private static void ResetTag() {

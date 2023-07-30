@@ -3,7 +3,7 @@ using SerialApi.error;
 
 namespace SerialApi;
 
-public class SkyDuino {
+public class SkyDuino : IDisposable {
 
 
     private readonly SerialPort _serialPort;
@@ -17,28 +17,7 @@ public class SkyDuino {
         _serialPort.ReadTimeout = 4000;
         _serialPort.WriteTimeout = 1000;
         _serialPort.Open();
-
-        _serialPort.DtrEnable = true;
-        Thread.Sleep(100);
-        _serialPort.DtrEnable = false;
-        Console.WriteLine("Waiting for Arduino...");
-
-        // Read possibly junk data because we know it might be bad
-        try {
-            while (true) {
-                var line = _serialPort.ReadLine();
-                if (!line.Equals("==================================\r")) continue;
-                Console.WriteLine("Verified Serial connection is okay");
-                break;
-            }
-        }
-        catch (TimeoutException) {
-            Console.WriteLine("Hello? Arduino??? (Failed to setup reliable serial with arduino)");
-            throw;
-        }
-
         _serialPort.ReadTimeout = 2000;
-        Console.WriteLine("Arduino Ready");
     }
 
     public string GetNativeVersion() {
@@ -74,7 +53,7 @@ public class SkyDuino {
 
         if (result != 0) throw new AuthenticationException(result, keyType);
     }
-    
+
     /**
      * @deprecated :(
      */
@@ -105,20 +84,20 @@ public class SkyDuino {
 
         if (result != 0) throw new WriteException(result);
     }
-    
+
     public void WriteFullFast(byte[] dump) {
         if (dump.Length != 1024) throw new Exception("Bad dump size. Needs to be a length of 1024");
         var data = new[] { (byte)Functions.FastWrite }.Concat(dump).ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
-        
+
         var result = stream.ReadByte();
         if (result != 0) throw new WriteException(result);
     }
-    
+
     public byte[] ReadFullFast() {
         var data = new[] { (byte)Functions.FastRead }.ToArray();
         using var stream = new MemoryStream(SendDataExpectResult(data, 1));
-        
+
         var result = stream.ReadByte();
         if (result != 0) throw new ReadException(result);
         return WaitForData(1024);
@@ -126,7 +105,7 @@ public class SkyDuino {
 
     public void SetKeys(bool isMagic, byte[][] keyA, byte[][] keyB) {
         var data = new byte[1 + 16 * 6 * 2];
-        data[0] = (byte) (isMagic ? 1 : 0);
+        data[0] = (byte)(isMagic ? 1 : 0);
         // TODO: the rest lol
         SendData(new[] { (byte)Functions.SetTagKeys }.Concat(data).ToArray());
     }
@@ -148,5 +127,9 @@ public class SkyDuino {
         _serialPort.Write(data, 0, data.Length);
         Thread.Sleep(timeout);
         return WaitForData(expectedMinDataLength, timeout);
+    }
+
+    public void Dispose() {
+        _serialPort.Dispose();
     }
 }
